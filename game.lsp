@@ -46,6 +46,29 @@ Modifications:
     )
 )
 
+( defun counter ( atom lst )
+	"Count all of a given atom"
+	( cond
+	
+		;End of the list OR list was empty all along.
+		( ( null lst ) 
+			0 
+		)
+
+		;IF the CAR is the atom you're looking for,
+		;Increment count and recurse on the cdr
+		( ( equal atom ( car lst ) ) 
+			( + 1 ( counter atom ( cdr lst ) ) ) 
+		)
+
+		;ELSE, recurse on the cdr, no incrementation
+		( t 
+			( counter atom ( cdr lst ) ) 
+		) 
+
+	)
+)
+
 ( defun declare-winner ( scores ) 
 	"Announce Winner of the game based on count list"
 	( let 
@@ -82,27 +105,7 @@ Modifications:
     )
 )
 
-( defun counter ( atom lst )
-	( cond
-	
-		;End of the list OR list was empty all along.
-		( ( null lst ) 
-			0 
-		)
 
-		;IF the CAR is the atom you're looking for,
-		;Increment count and recurse on the cdr
-		( ( equal atom ( car lst ) ) 
-			( + 1 ( counter atom ( cdr lst ) ) ) 
-		)
-
-		;ELSE, recurse on the cdr, no incrementation
-		( t 
-			( counter atom ( cdr lst ) ) 
-		) 
-
-	)
-)
 
 ( defun prompt-turn ( player ) 
 	"Inform user it is their turn, validate the turn they input is acceptable"
@@ -127,7 +130,19 @@ Modifications:
 			( setf col ( read stream NIL NIL ) )        
 		)
 
-        ( place-disc row col player )
+        ( cond
+
+            ;Place the disc if legal move
+            ( (legal-move? row col ) 
+                ( place-disc row col player )
+            )
+
+            ( T 
+                ( format t "~%Illegal Move. Please Try Again.~%" )
+                ( prompt-turn player )
+            )
+        )
+
         ( values )
 	)
 )
@@ -189,7 +204,39 @@ Modifications:
 
 ( defun legal-move? ( row column ) 
 	"Check if a supplied place-disc move is legal"
+    ( let 
+        ( 
+            location
+            ( legal T ) ;Default this to true; let's try to see if it is false
+        )
 
+        ;LOCATION is 
+        ;( 8 x ( row - 1 ) + col ) - 1
+        ; 8       = Board row length
+        ; row - 1 = All rows after 1st must encorporate previous row lengths
+        ; + col   = After multiplying by rows, add column offset
+        ; - 1     = nth starts at 0, so subtract 1. 
+        ( setf location 
+            ( - ( + ( * ( - row 1 ) 8 ) column ) 1 ) 
+    	)
+
+
+
+		( cond
+			
+		    ;THINGS TO CHECK:
+
+		    ;IS THE SPOT ALREADY OCCUPIED
+            ( 
+                ( not 
+                    ( string= ( nth location *game_board* ) "-") 
+                ) 
+                ( setf legal NIL )
+            )
+		)
+
+        legal
+	)
 )
 
 ( defun pass-turn? ( board player ) 
