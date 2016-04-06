@@ -10,6 +10,27 @@ Modifications:
 
 |#
 
+#|--------------------------------------------------------------------------|#
+#|                               Global Vars                                |#
+#|--------------------------------------------------------------------------|#
+
+( defparameter *blk_pass*  NIL )
+( defparameter *wht_pass*  NIL )
+( defparameter *game_board* 
+	                        '( - - - - - - - -
+		   					   - - - - - - - - 
+		   					   - - - - - - - - 
+		                       - - - W B - - - 
+		                       - - - B W - - - 
+		                       - - - - - - - - 
+		                       - - - - - - - - 
+		                       - - - - - - - - 
+   		                     ) 
+)
+
+( load 'print-funcs )
+
+
 ( defun count-discs ( board ) 
 	"Return Player Scores AKA how many pieces they currently have"
 	( let 
@@ -83,9 +104,87 @@ Modifications:
 	)
 )
 
+( defun prompt-turn ( player ) 
+	"Inform user it is their turn, validate the turn they input is acceptable"
+	( let 
+        ( 
+            input
+            row
+            col
+        )
+
+		( print-board *game_board* )
+		( format t "PLAYER: ~A~%" player )
+		( format t "What is your move [row col]? " )
+
+		;get user input...
+		( setf input ( read-line ) )
+
+        ( with-input-from-string ( stream input )
+			;...and set the FIRST number as ROW...
+			( setf row ( read stream NIL NIL ) )
+			;...and set the SECOND number as COL.
+			( setf col ( read stream NIL NIL ) )        
+		)
+
+        ( place-disc row col player )
+        ( values )
+	)
+)
+
 ( defun place-disc ( row column player ) 
 	"Place a Disc in the specified location, flip any pieces that are now flanked"
+	( let 
+        ( 
+        	location
+        )
 
+        ;LOCATION is 
+        ;( 8 x ( row - 1 ) + col ) - 1
+        ; 8       = Board row length
+        ; row - 1 = All rows after 1st must encorporate previous row lengths
+        ; + col   = After multiplying by rows, add column offset
+        ; - 1     = nth starts at 0, so subtract 1. 
+        ( setf location 
+        		( - ( + ( * ( - row 1 ) 8 ) column ) 1 ) 
+    	)
+
+
+		( cond
+			;Place Black Disc
+			( ( string= player "BLACK" ) 
+				;place disc
+				( setf (nth location *game_board*) "B" )
+				;ensure Black pass flag is FALSE
+				( setf *blk_pass* NIL )
+			)
+
+			;Place White Disc
+			( ( string= player "WHITE" ) 
+				;place disc
+				(setf (nth location *game_board*) "W")
+				;ensure White pass flag is FALSE
+				( setf *wht_pass* NIL )
+			)
+		)
+
+		( end-turn player )
+    )
+)
+
+( defun end-turn ( player )
+	"Switch turns to the other player"
+	( cond
+		;Switch to White Turn
+		( ( string= player "BLACK" ) 
+			( prompt-turn "WHITE" )
+		)
+
+		;Switch to Black Turn
+		( ( string= player "WHITE" ) 
+			( prompt-turn "BLACK" )
+		)
+	)
 )
 
 ( defun legal-move? ( row column ) 
