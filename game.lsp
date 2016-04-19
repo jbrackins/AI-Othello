@@ -133,10 +133,12 @@ Modifications:
         ( cond
 
             ;Place the disc if legal move
-            ( (legal-move? row col ) 
-                ( place-disc row col player )
+            ( (legal-move? player row col )
+            	( place-disc player row col ) 
+                ( end-turn player )
             )
 
+            ;else
             ( T 
                 ( format t "~%Illegal Move. Please Try Again.~%" )
                 ( prompt-turn player )
@@ -147,7 +149,7 @@ Modifications:
 	)
 )
 
-( defun place-disc ( row column player ) 
+( defun place-disc ( player row column ) 
 	"Place a Disc in the specified location, flip any pieces that are now flanked"
 	( let 
         ( 
@@ -183,8 +185,8 @@ Modifications:
 			)
 		)
 
-		( flip-at player *game_board* row column )
-		( end-turn player )
+		;( flip-at player *game_board* row column )
+		;( end-turn player )
     )
 )
 
@@ -203,12 +205,13 @@ Modifications:
 	)
 )
 
-( defun legal-move? ( row column ) 
+( defun legal-move? ( player row column ) 
 	"Check if a supplied place-disc move is legal"
     ( let 
         ( 
             location
             ( legal T ) ;Default this to true; let's try to see if it is false
+            flips
         )
 
         ;LOCATION is 
@@ -236,12 +239,68 @@ Modifications:
             )
 		)
 
+
+		;Try to perform flips, if none happen, then illegal move
+		( setf flips ( flip-at player *game_board* row column ) )
+		( cond
+            ( 
+                ( < flips 1 ) 
+                ( setf legal NIL )
+            )
+		)
         legal
 	)
 )
 
 ( defun pass-turn? ( board player ) 
 	"Check if a player has to pass their turn"
+
+)
+
+
+( defun check-flip-dirs ( row column directions )  
+	( let 
+		(
+			location
+			( left-edge  '( 00 08 16 24 32 40 48 56 ) )
+			( right-edge '( 07 15 23 31 39 47 55 63 ) )
+		)
+
+		( setf location 
+			( - ( + ( * ( - row 1 ) 8 ) column ) 1 ) 
+		)
+
+
+
+		( cond
+			
+			;Check if it's in the left edge
+		    ( 
+		        ( member location left-edge )
+		        ;remove -9, -1, 7
+		        ( setf directions ( remove -9 directions ))
+		        ( setf directions ( remove -1 directions ))
+		        ( setf directions ( remove  7 directions ))
+
+		    )
+
+			;Check if it's in the right edge
+		    ( 
+		        ( member location right-edge )
+		        ;remove -7, 1, 9
+		        ( setf directions ( remove  9 directions ))
+		        ( setf directions ( remove  1 directions ))
+		        ( setf directions ( remove -7 directions ))
+
+		    )
+		)
+		directions
+
+
+	)
+
+
+
 
 )
 
@@ -260,8 +319,11 @@ Modifications:
 			;  -01  00  01
 			;   07  08  09	
             (  directions '(-9 -8 -7 -1 1 7 8 9) )
+            (num-flipped 0)
         )
 
+        ;update directions list based on if you're on left or right
+        ( setf directions ( check-flip-dirs row column directions ) )
         (setf flip-list '())
 
         ( setf location 
@@ -293,12 +355,17 @@ Modifications:
 			(setf curr (+ curr dir))
 			( cond
 	
+				( (or ( > curr 63) ( < curr 0 )) 
+
+					(print "SHIT")
+					)
 				( ( string= opponent-piece (nth curr board)  ) 
 					( format t "FOUND AT: ~A~%" curr )
 					(setf flip-list (append  flip-list (list curr)) )
+					( format t "WHAT ~A~%" flip-list )
 
 					(setf curr (+ curr dir))
-					( loop while ( < curr 64 ) do
+					( loop while ( and ( < curr 64 ) ( > curr -1 ) ) do
 
 
 						( cond
@@ -323,11 +390,13 @@ Modifications:
 										( ( string=  (nth q  *game_board* )  "B" ) 
 											( format t "BLAH: ~A~%" q )
 											(setf  (nth q  *game_board* ) "W")
+											( incf num-flipped )
 
 										)
 
 										( ( string=  (nth q  *game_board* )  "W" ) 
 											(setf  (nth q  *game_board* ) "B")
+											( incf num-flipped )
 
 										)
 
@@ -335,33 +404,13 @@ Modifications:
 
 								) 
 								(setf flip-list NIL)
-								;(map 'list #'(lambda (x)
 
-
-								;	( cond
-								
-								;		( ( string=  (nth x  *game_board* )  "B" ) 
-								;			( format t "BLAH: ~A~%" x )
-								;			(setf  (nth x  *game_board* ) "W")
-
-								;		)
-
-								;		( ( string=  (nth x  *game_board* )  "W" ) 
-								;			(setf  (nth x  *game_board* ) "B")
-
-								;		)
-
-								;	)
-
-
-								 ;) 
-         						;	flip-list)
-     							;set curr arbitrarily high so the loop short circuits 
 								(setf curr 100)
 
 							)
 							( t
-								;( format t "Not Good~%")
+								(setf flip-list NIL)
+								( format t "Not Good~%")
 
 							)
 						)
@@ -381,41 +430,11 @@ Modifications:
 			(setf curr location)
 
 		)
-
+		( format t "~A tiles flipped ~%" num-flipped)
+		num-flipped
 	)
 
 
-)
-
-(defun reversi (bracket1 bracket2 direction board)
-	( let 
-        ( 
-            (curr bracket1)
-        )
-    
-		(setf curr (+ curr direction))
-		(print "HERE")
-		( loop while (not ( eq curr bracket2 )) do
-
-
-			( cond
-		
-				( ( string=  (nth curr board)  "B" ) 
-					(setf  (nth curr board) "W")
-
-				)
-
-				( ( string=  (nth curr board)  "W" ) 
-					(setf  (nth curr board) "B")
-
-				)
-
-			)
-
-			(setf curr (+ curr direction))
-		)
-
-	)
 )
 
 ( defun end-game? ( board player ) 

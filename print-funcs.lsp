@@ -51,12 +51,14 @@ Modifications:
 				( format t "~A " square )
   			)
 
-            ( format t "~%" ) 
 
+            ( format t " ~A~%" ( - end 1 ) ) 
      		;increment the iterators
      		( setf start end )
      		( setf end ( + end 8 ) )
      		( incf row )
+
+
      	) 
         
         ( format t "~%" ) 
