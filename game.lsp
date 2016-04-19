@@ -304,6 +304,84 @@ Modifications:
 
 )
 
+
+( defun keep-moving ( curr direction )
+	( let 
+		(
+			location
+			( left-edge   '( 00 08 16 24 32 40 48 56 ) )
+			( right-edge  '( 07 15 23 31 39 47 55 63 ) )
+			( top-edge    '( 00 01 02 03 04 05 06 07 ) )
+			( bottom-edge '( 56 57 58 59 60 61 62 63 ) )
+			( moving t )
+		)
+
+		(format t "curr: ~A dir: ~A ~%" curr direction)
+		( cond
+
+			(
+				( or 
+					( < curr 0  )
+					( > curr 64 )
+				 )
+				( setf moving nil )
+
+			)
+			;on the left edge AND you're moving 
+			;-9 OR -1 OR 7
+			(
+				( and ( member curr left-edge )
+				( or ( eq direction -9 ) 
+					 ( eq direction -1 ) 
+					 ( eq direction  7 ) 
+				) )
+				
+				( setf moving nil )
+			)
+
+			;on the right edge AND you're moving 
+			;9 OR 1 OR -7
+			(
+				( and ( member curr right-edge )
+				( or ( eq direction 9 ) 
+					 ( eq direction 1 ) 
+					 ( eq direction -7 ) 
+				) )
+				
+				( setf moving nil )
+			)
+
+			;on the top edge AND you're moving 
+			;-9 OR -8 OR -7
+			(
+				( and ( member curr top-edge )
+				( or ( eq direction -9 ) 
+					 ( eq direction -8 ) 
+					 ( eq direction -7 ) 
+				) )
+			
+				( setf moving nil )
+			)
+
+			;on the bottom edge AND you're moving 
+			;9 OR 8 OR 7
+			(
+				( and ( member curr bottom-edge )
+				( or ( eq direction 9 ) 
+					 ( eq direction 8 ) 
+					 ( eq direction 7 ) 
+				) )
+				
+				( setf moving nil )
+			)
+		)
+
+		(print moving)
+		moving
+	)
+
+)
+
 ( defun flip-at ( player board row column )
 	"Check for flips at a given location"
     ( let 
@@ -358,14 +436,15 @@ Modifications:
 				( (or ( > curr 63) ( < curr 0 )) 
 
 					(print "SHIT")
-					)
+				)
 				( ( string= opponent-piece (nth curr board)  ) 
 					( format t "FOUND AT: ~A~%" curr )
 					(setf flip-list (append  flip-list (list curr)) )
 					( format t "WHAT ~A~%" flip-list )
 
-					(setf curr (+ curr dir))
-					( loop while ( and ( < curr 64 ) ( > curr -1 ) ) do
+					;(setf curr (+ curr dir))
+					( loop while ( keep-moving curr dir ) do
+						(setf curr ( + curr dir ) )
 
 
 						( cond
@@ -417,7 +496,6 @@ Modifications:
 
 
 						;(print "hi")
-						(setf curr (+ curr dir))
 					)
 
 				)
