@@ -462,6 +462,9 @@ Modifications:
 		;(print (list-length board))
 		(setf curr location)
 		( loop for dir in directions do 
+
+			;reset whether you've found a bracket
+			( setf found-bracket nil )
 			( format t "~A ~%" dir )
 			
 			(setf curr (+ curr dir))
@@ -538,7 +541,7 @@ Modifications:
 
 
 										)
-										
+
 										;Empty flip list and set curr iterator very high
 										;and set that a bracket has been found
 										(setf flip-list NIL)
