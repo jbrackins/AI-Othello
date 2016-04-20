@@ -39,8 +39,8 @@ Modifications:
         	( wht 0 ) ;WHITE pieces
         )
 
-        ( setf blk ( counter 'B board ) )
-        ( setf wht ( counter 'W board ) )
+        ( setf blk ( counter "B" board ) )
+        ( setf wht ( counter "W" board ) )
 
         ( list blk wht )
     )
@@ -52,12 +52,12 @@ Modifications:
 	
 		;End of the list OR list was empty all along.
 		( ( null lst ) 
-			0 
+			0
 		)
 
 		;IF the CAR is the atom you're looking for,
 		;Increment count and recurse on the cdr
-		( ( equal atom ( car lst ) ) 
+		( ( string= atom ( car lst ) ) 
 			( + 1 ( counter atom ( cdr lst ) ) ) 
 		)
 
