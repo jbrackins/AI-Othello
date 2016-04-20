@@ -220,16 +220,45 @@ Modifications:
         ; row - 1 = All rows after 1st must encorporate previous row lengths
         ; + col   = After multiplying by rows, add column offset
         ; - 1     = nth starts at 0, so subtract 1. 
-        ( setf location 
-            ( - ( + ( * ( - row 1 ) 8 ) column ) 1 ) 
+        ( cond 
+        	( ( and 
+        			( not (null row) )
+        			( not (null column) )
+
+    			)
+
+		        ( setf location 
+		            ( - ( + ( * ( - row 1 ) 8 ) column ) 1 ) 
+		    	)
+
+    		)
+
     	)
+
 
 
 
 		( cond
 			
 		    ;THINGS TO CHECK:
-
+		    ;did you not enter anything
+            ( 
+                ( or 
+                    ( null row ) 
+                    ( null column ) 
+                ) 
+                ( setf legal NIL )
+            )
+		    ;Row is out of bounds
+            ( 
+                ( or 
+                    ( < row 1 ) 
+                    ( > row 8 ) 
+                    ( < column 1 ) 
+                    ( > column 8 ) 
+                ) 
+                ( setf legal NIL )
+            )
 		    ;IS THE SPOT ALREADY OCCUPIED
             ( 
                 ( not 
@@ -237,17 +266,21 @@ Modifications:
                 ) 
                 ( setf legal NIL )
             )
+            ( T
+    			;Try to perform flips, if none happen, then illegal move
+				( setf flips ( flip-at player *game_board* row column ) )
+				( cond
+		            ( 
+		                ( < flips 1 ) 
+		                ( setf legal NIL )
+		            )
+				)
+
+        	)
 		)
 
 
-		;Try to perform flips, if none happen, then illegal move
-		( setf flips ( flip-at player *game_board* row column ) )
-		( cond
-            ( 
-                ( < flips 1 ) 
-                ( setf legal NIL )
-            )
-		)
+
         legal
 	)
 )
@@ -398,6 +431,7 @@ Modifications:
 			;   07  08  09	
             (  directions '(-9 -8 -7 -1 1 7 8 9) )
             (num-flipped 0)
+            ( found-bracket nil )
         )
 
         ;update directions list based on if you're on left or right
@@ -458,50 +492,62 @@ Modifications:
 							)
 							( ( string= player-piece (nth curr board)  )
 								;found BRACKET PIECE 
-								( format t "FOUND BRAKCET AT: ~A~%" curr )
-								( format t "WHAT ~A~%" flip-list )
-
-								;( reversi location curr dir board )
 								( cond 
-									;bad bracket, don't do flips
-									( ( member -1000 flip-list )
-										( format t "Bad Bracket: No FLips~%" )
+									( ( not found-bracket )
 
 
-									)
+										( format t "FOUND BRAKCET AT: ~A~%" curr )
+										( format t "WHAT ~A~%" flip-list )
 
-									;otherwise, process the flip list
-									( t
+										;( reversi location curr dir board )
+										( cond 
+											;bad bracket, don't do flips
+											( ( member -1000 flip-list )
+												( format t "Bad Bracket: No FLips~%" )
 
-										( dolist (q flip-list )
-											( format t "FLIPPIN: ~A~%" q )
-											( cond
-
-												( ( string=  (nth q  *game_board* )  "B" ) 
-													( format t "BLAH: ~A~%" q )
-													(setf  (nth q  *game_board* ) "W")
-													( incf num-flipped )
-
-												)
-
-												( ( string=  (nth q  *game_board* )  "W" ) 
-													(setf  (nth q  *game_board* ) "B")
-													( incf num-flipped )
-
-												)
 
 											)
 
-										) 
+											;otherwise, process the flip list
+											( t
+
+												( dolist (q flip-list )
+													( format t "FLIPPIN: ~A~%" q )
+													( cond
+
+														( ( string=  (nth q  *game_board* )  "B" ) 
+															( format t "BLAH: ~A~%" q )
+															(setf  (nth q  *game_board* ) "W")
+															( incf num-flipped )
+
+														)
+
+														( ( string=  (nth q  *game_board* )  "W" ) 
+															(setf  (nth q  *game_board* ) "B")
+															( incf num-flipped )
+
+														)
+
+													)
+
+												) 
 
 
+											)
+
+
+
+										)
+										
+										;Empty flip list and set curr iterator very high
+										;and set that a bracket has been found
+										(setf flip-list NIL)
+										(setf curr 100)
+										(setf found-bracket T)
 									)
 
-									;Empty flip list and set curr iterator very high
-									(setf flip-list NIL)
-									(setf curr 100)
-
 								)
+
 								
 							)
 							( t
