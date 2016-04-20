@@ -462,33 +462,51 @@ Modifications:
 								( format t "WHAT ~A~%" flip-list )
 
 								;( reversi location curr dir board )
-								( dolist (q flip-list )
-								 ( format t "FLIPPIN: ~A~%" q )
-									( cond
-								
-										( ( string=  (nth q  *game_board* )  "B" ) 
-											( format t "BLAH: ~A~%" q )
-											(setf  (nth q  *game_board* ) "W")
-											( incf num-flipped )
+								( cond 
+									;bad bracket, don't do flips
+									( ( member -1000 flip-list )
+										( format t "Bad Bracket: No FLips~%" )
 
-										)
-
-										( ( string=  (nth q  *game_board* )  "W" ) 
-											(setf  (nth q  *game_board* ) "B")
-											( incf num-flipped )
-
-										)
 
 									)
 
-								) 
-								(setf flip-list NIL)
+									;otherwise, process the flip list
+									( t
 
-								(setf curr 100)
+										( dolist (q flip-list )
+											( format t "FLIPPIN: ~A~%" q )
+											( cond
 
+												( ( string=  (nth q  *game_board* )  "B" ) 
+													( format t "BLAH: ~A~%" q )
+													(setf  (nth q  *game_board* ) "W")
+													( incf num-flipped )
+
+												)
+
+												( ( string=  (nth q  *game_board* )  "W" ) 
+													(setf  (nth q  *game_board* ) "B")
+													( incf num-flipped )
+
+												)
+
+											)
+
+										) 
+
+
+									)
+
+									;Empty flip list and set curr iterator very high
+									(setf flip-list NIL)
+									(setf curr 100)
+
+								)
+								
 							)
 							( t
-								(setf flip-list NIL)
+								;(setf flip-list NIL)
+								(setf flip-list (append  flip-list (list -1000)) )
 								( format t "Not Good~%")
 
 							)
@@ -497,6 +515,7 @@ Modifications:
 
 						;(print "hi")
 					)
+					(setf flip-list NIL)
 
 				)
 
