@@ -133,8 +133,8 @@ Modifications:
         ( cond
 
             ;Place the disc if legal move
-            ( (legal-move? player row col )
-            	( place-disc player row col ) 
+            ( (legal-move? player board row col )
+            	( place-disc player board row col ) 
                 ( end-turn player )
             )
 
@@ -149,7 +149,7 @@ Modifications:
 	)
 )
 
-( defun place-disc ( player row column ) 
+( defun place-disc ( player board row column ) 
 	"Place a Disc in the specified location, flip any pieces that are now flanked"
 	( let 
         ( 
@@ -171,7 +171,7 @@ Modifications:
 			;Place Black Disc
 			( ( string= player "BLACK" ) 
 				;place disc
-				( setf (nth location *game_board*) "B" )
+				( setf (nth location board) "B" )
 				;ensure Black pass flag is FALSE
 				( setf *blk_pass* NIL )
 			)
@@ -179,7 +179,7 @@ Modifications:
 			;Place White Disc
 			( ( string= player "WHITE" ) 
 				;place disc
-				(setf (nth location *game_board*) "W")
+				(setf (nth location board) "W")
 				;ensure White pass flag is FALSE
 				( setf *wht_pass* NIL )
 			)
@@ -205,7 +205,50 @@ Modifications:
 	)
 )
 
-( defun legal-move? ( player row column ) 
+
+( defun count-legal-moves ( player board )
+	"Check if a player has any legal moves"
+    ( let 
+        ( 
+            row
+            col
+            location
+            temp-board
+            ( moves 0 )
+        )
+
+    
+		(setf temp-board (copy-list *game_board*))
+
+		;incredibly bad version:
+		( loop for row from 1 to 8 do 
+			( loop for col from 1 to 8 do 
+
+			  	( setf location 
+		            ( - ( + ( * ( - row 1 ) 8 ) col ) 1 ) 
+		    	)
+				;(format t "row: ~A col: ~A ~%" row col)
+				( cond 
+					( ( string= "-" ( nth location *game_board* ) )
+						
+						( cond 
+							( ( legal-move? player *game_board* row col ) 
+								( incf moves )
+								(setf *game_board* (copy-list temp-board))
+							)
+						)
+					)
+				)
+			)
+		)
+		(setf *game_board* (copy-list temp-board))
+
+		(format t "~A Moves Available ~%" moves)
+
+	)
+)
+
+( defun legal-move? ( player board row column ) 
 	"Check if a supplied place-disc move is legal"
     ( let 
         ( 
@@ -224,15 +267,11 @@ Modifications:
         	( ( and 
         			( not (null row) )
         			( not (null column) )
-
     			)
-
 		        ( setf location 
 		            ( - ( + ( * ( - row 1 ) 8 ) column ) 1 ) 
 		    	)
-
     		)
-
     	)
 
 
@@ -252,23 +291,21 @@ Modifications:
 		    ;Row is out of bounds
             ( 
                 ( or 
-                    ( < row 1 ) 
-                    ( > row 8 ) 
-                    ( < column 1 ) 
-                    ( > column 8 ) 
+                    ( < row 1 )    ( > row 8 ) 
+                    ( < column 1 ) ( > column 8 ) 
                 ) 
                 ( setf legal NIL )
             )
 		    ;IS THE SPOT ALREADY OCCUPIED
             ( 
                 ( not 
-                    ( string= ( nth location *game_board* ) "-") 
+                    ( string= ( nth location board ) "-") 
                 ) 
                 ( setf legal NIL )
             )
             ( T
     			;Try to perform flips, if none happen, then illegal move
-				( setf flips ( flip-at player *game_board* row column ) )
+				( setf flips ( flip-at player board row column ) )
 				( cond
 		            ( 
 		                ( < flips 1 ) 
@@ -287,6 +324,26 @@ Modifications:
 
 ( defun pass-turn? ( board player ) 
 	"Check if a player has to pass their turn"
+
+	( format t "No available moves for ~A...~%" player )
+	( cond
+		;Skip Black Turn
+		( ( string= player "BLACK" ) 
+			;place disc
+			
+			;ensure Black pass flag is T
+			( setf *blk_pass* T )
+			( end-turn "BLACK" )
+		)
+
+		;Skip White Turn
+		( ( string= player "WHITE" ) 
+			;ensure White pass flag is T
+			( setf *wht_pass* T )
+			( end-turn "WHITE" )
+
+		)
+	)
 
 )
 
@@ -518,15 +575,15 @@ Modifications:
 													( format t "FLIPPIN: ~A~%" q )
 													( cond
 
-														( ( string=  (nth q  *game_board* )  "B" ) 
+														( ( string=  (nth q  board )  "B" ) 
 															( format t "BLAH: ~A~%" q )
-															(setf  (nth q  *game_board* ) "W")
+															(setf  (nth q  board ) "W")
 															( incf num-flipped )
 
 														)
 
-														( ( string=  (nth q  *game_board* )  "W" ) 
-															(setf  (nth q  *game_board* ) "B")
+														( ( string=  (nth q  board )  "W" ) 
+															(setf  (nth q  board ) "B")
 															( incf num-flipped )
 
 														)
