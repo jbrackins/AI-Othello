@@ -67,6 +67,16 @@
   )
 )
 
+(defun get-valid-moves (board color)
+  (let ( (return-list nil) )
+    (loop for x from 0 to 63 do
+      (if (valid-move board x color) (setq return-list (cons x return-list)))
+    )
+
+    return-list
+  )
+)
+
 (defun make-move-direction (board pos move color good)
   (let ( (new-pos (+ pos move)) )
     (cond
