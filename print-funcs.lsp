@@ -42,7 +42,7 @@ Modifications:
        	;print out the column labels
 
         ( format t "~%  1 2 3 4 5 6 7 8~%" ) 
-     	( loop while ( < row 8 ) do
+     	( loop while ( < row 9 ) do
 
      		;print row
             ( format t "~A " row ) 
