@@ -48,19 +48,49 @@ Modifications:
             ( format t "~A " row ) 
 
     		( loop for square in ( subseq board start end ) do 
-				( format t "~A " square )
+				;( format t "~A " square )
+                ( print-square square )
   			)
 
-            ( format t "~%" ) 
 
+            ( format t " ~A~%" ( - end 1 ) ) 
      		;increment the iterators
      		( setf start end )
      		( setf end ( + end 8 ) )
      		( incf row )
-     	) 
 
+
+     	) 
+        
+        ( format t "~%" ) 
      	( values )
     )
+)
+
+
+( defun print-square ( square )
+        ( cond
+    
+            ;Black
+            ( ( string= square "B" ) 
+                ( format t  "~c[37;40m~A~c[0m " #\ESC square #\ESC)
+            )
+
+            ;White
+            ( ( string= square "W" ) 
+                ( format t  "~c[30;47m~A~c[0m " #\ESC square #\ESC)
+            )
+
+            ;Blank should be green
+            (  ( string= square "-" ) 
+                ( format t  "~c[32m~A~c[0m " #\ESC square #\ESC)
+            ) 
+
+            ;else
+            ( T
+                ( format t "~A " square )
+            )
+        )
 )
 
 ( defun test-print-board () 

@@ -10,6 +10,16 @@ Modifications:
 
 |#
 
+#|--------------------------------------------------------------------------|#
+#|                               Files Loaded                               |#
+#|--------------------------------------------------------------------------|#
+
+( load 'print-funcs )
+( load 'game        )
+
+#|--------------------------------------------------------------------------|#
+#|                         Tournament Functions                             |#
+#|--------------------------------------------------------------------------|#
 
 ( defun make-move ( position player ply ) 
 	"function to allow Othello programs interact in computer tournament"
@@ -19,6 +29,13 @@ Modifications:
 
 ( defun othello ( &optional ( player nil ) ) 
 	"Starts up a game of othello."
+
+	;just printing out the arg just to verify CLI is workin
+	(print player)
+)
+
+( defun othello-two-players ( &optional ( player nil ) ) 
+	"Starts up a game of othello where both players are human."
 
 	;just printing out the arg just to verify CLI is workin
 	(print player)
