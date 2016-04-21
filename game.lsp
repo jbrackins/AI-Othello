@@ -98,6 +98,7 @@ Modifications:
 		)
 
 		;Print out the score
+		( format t "~%GAME OVER. NO REMAINING MOVES~%" )
 		( format t "BLACK  SCORE: ~A DISCS~%" blk_score )
 		( format t "WHITE  SCORE: ~A DISCS~%" wht_score )
 		( format t "GAME RESULTS: ~A~%" winner )
@@ -117,34 +118,72 @@ Modifications:
         )
 
 		( print-board *game_board* )
-		( format t "PLAYER: ~A~%" player )
-		( format t "What is your move [row col]? " )
 
-		;get user input...
-		( setf input ( read-line ) )
 
-        ( with-input-from-string ( stream input )
-			;...and set the FIRST number as ROW...
-			( setf row ( read stream NIL NIL ) )
-			;...and set the SECOND number as COL.
-			( setf col ( read stream NIL NIL ) )        
+		( cond
+			;end game?
+			( ( end-game? *game_board* )
+
+				( declare-winner  ( count-discs *game_board* )   )			
+
+			)
+
+			;pass player turn?
+			( ( pass-turn? player  *game_board* ) 
+
+
+
+				( cond
+					;Place Black Disc
+					( ( string= player "BLACK" ) 
+						;ensure Black pass flag is T
+						( setf *blk_pass* T )
+					)
+
+					;Place White Disc
+					( ( string= player "WHITE" ) 
+						;ensure White pass flag is T
+						( setf *wht_pass* T )
+					)
+				)
+
+				( format t "NO MOVES AVAILABLE FOR: ~A~%" player )
+				( end-turn player )
+			)
+
+			;otherwise, promt the user and let them play
+			( t
+
+				( format t "PLAYER: ~A~%" player )
+				( format t "What is your move [row col]? " )
+
+
+				;get user input...
+				( setf input ( read-line ) )
+
+		        ( with-input-from-string ( stream input )
+					;...and set the FIRST number as ROW...
+					( setf row ( read stream NIL NIL ) )
+					;...and set the SECOND number as COL.
+					( setf col ( read stream NIL NIL ) )        
+				)
+
+		        ( cond
+
+		            ;Place the disc if legal move
+		            ( (legal-move? player  *game_board* row col )
+		            	( place-disc player  *game_board* row col ) 
+		                ( end-turn player )
+		            )
+
+		            ;else
+		            ( T 
+		                ( format t "~%Illegal Move. Please Try Again.~%" )
+		                ( prompt-turn player )
+		            )
+		        )
+			)
 		)
-
-        ( cond
-
-            ;Place the disc if legal move
-            ( (legal-move? player board row col )
-            	( place-disc player board row col ) 
-                ( end-turn player )
-            )
-
-            ;else
-            ( T 
-                ( format t "~%Illegal Move. Please Try Again.~%" )
-                ( prompt-turn player )
-            )
-        )
-
         ( values )
 	)
 )
@@ -192,6 +231,7 @@ Modifications:
 
 ( defun end-turn ( player )
 	"Switch turns to the other player"
+
 	( cond
 		;Switch to White Turn
 		( ( string= player "BLACK" ) 
@@ -243,7 +283,8 @@ Modifications:
 		)
 		(setf *game_board* (copy-list temp-board))
 
-		(format t "~A Moves Available ~%" moves)
+		;(format t "~A Moves Available ~%" moves)
+		moves
 
 	)
 )
@@ -322,29 +363,20 @@ Modifications:
 	)
 )
 
-( defun pass-turn? ( board player ) 
+( defun pass-turn? ( player board ) 
 	"Check if a player has to pass their turn"
 
-	( format t "No available moves for ~A...~%" player )
 	( cond
-		;Skip Black Turn
-		( ( string= player "BLACK" ) 
-			;place disc
-			
-			;ensure Black pass flag is T
-			( setf *blk_pass* T )
-			( end-turn "BLACK" )
+		;Are there any legal moves? if not.... pass turn
+		( ( < ( count-legal-moves player board ) 1  )
+				;( format t "No available moves for ~A...~%" player )
+			T
 		)
-
-		;Skip White Turn
-		( ( string= player "WHITE" ) 
-			;ensure White pass flag is T
-			( setf *wht_pass* T )
-			( end-turn "WHITE" )
-
+		;otherwise, don't pass turn.
+		( T
+			NIL
 		)
 	)
-
 )
 
 
@@ -395,7 +427,7 @@ Modifications:
 )
 
 
-( defun keep-moving ( curr direction )
+( defun keep-moving? ( curr direction )
 	( let 
 		(
 			location
@@ -406,7 +438,7 @@ Modifications:
 			( moving t )
 		)
 
-		(format t "curr: ~A dir: ~A ~%" curr direction)
+		;(format t "curr: ~A dir: ~A ~%" curr direction)
 		( cond
 
 			(
@@ -466,7 +498,7 @@ Modifications:
 			)
 		)
 
-		(print moving)
+		;(print moving)
 		moving
 	)
 
@@ -495,110 +527,111 @@ Modifications:
         ( setf directions ( check-flip-dirs row column directions ) )
         (setf flip-list '())
 
+        ;set location
         ( setf location 
             ( - ( + ( * ( - row 1 ) 8 ) column ) 1 ) 
     	)
 
-
-
+        ;determine what colour the player pieces are,
+        ;and what colour the opponent pieces are.
 		( cond
-	
 			( ( string= player "BLACK" ) 
 				(setf player-piece "B")
 				(setf opponent-piece "W")
-
 			)
 
 			( ( string= player "WHITE" ) 
 				(setf player-piece "W")
 				(setf opponent-piece "B")
 			)
-
 		)
-	
-		;(print (list-length board))
+
+		;set curr to the piece location	
 		(setf curr location)
+		
+		;For each direction in the list of directions (8 dirs)
 		( loop for dir in directions do 
 
 			;reset whether you've found a bracket
 			( setf found-bracket nil )
-			( format t "~A ~%" dir )
 			
+			;( format t "~A ~%" dir )
+			
+			;increment curr in the direction you want to move
 			(setf curr (+ curr dir))
 			( cond
 	
+				;Short circuit to handle -1 or 64 out of bounds
 				( (or ( > curr 63) ( < curr 0 )) 
-
-					(print "SHIT")
+					nil
+					;(print "SHIT")
 				)
-				( ( string= opponent-piece (nth curr board)  ) 
-					( format t "FOUND AT: ~A~%" curr )
-					(setf flip-list (append  flip-list (list curr)) )
-					( format t "WHAT ~A~%" flip-list )
 
-					;(setf curr (+ curr dir))
-					( loop while ( keep-moving curr dir ) do
+				;Found one of your opponent's pieces directly
+				;adjacent to the piece you wanna place, 
+				;start looking for a bracket.
+				( ( string= opponent-piece (nth curr board)  ) 
+					(setf flip-list (append  flip-list (list curr)) )
+					;( format t "FOUND AT: ~A~%" curr )
+					;( format t "WHAT ~A~%" flip-list )
+
+					;keep-moving? function will check if you 
+					;have hit out of bounds.
+					( loop while ( keep-moving? curr dir ) do
 						(setf curr ( + curr dir ) )
 
 
 						( cond
+
+							;Found another one of your opponent's pieces,
+							;keep going until you hit a bracket, hit space, 
+							;or step out of bounds
 							( ( string= opponent-piece (nth curr board)  ) 
 								;found another of the same colour, KEEP MOVING
-								( format t "FOUND ANother AT: ~A~%" curr )
+								;( format t "FOUND ANother AT: ~A~%" curr )
 								;push location onto list to reverse
 								(setf flip-list (append  flip-list (list curr)) )
-
-
 							)
+
+							;If you find a bracket piece:
 							( ( string= player-piece (nth curr board)  )
-								;found BRACKET PIECE 
 								( cond 
+									;additional flag to prevent finding a "double bracket"
 									( ( not found-bracket )
-
-
-										( format t "FOUND BRAKCET AT: ~A~%" curr )
-										( format t "WHAT ~A~%" flip-list )
-
-										;( reversi location curr dir board )
+										;( format t "FOUND BRAKCET AT: ~A~%" curr )
+										;( format t "WHAT ~A~%" flip-list )
 										( cond 
-											;bad bracket, don't do flips
+
+											;if the brackit is bad, don't do flips
 											( ( member -1000 flip-list )
-												( format t "Bad Bracket: No FLips~%" )
+												;( format t "Bad Bracket: No FLips~%" )
 
 
 											)
 
 											;otherwise, process the flip list
 											( t
-
 												( dolist (q flip-list )
-													( format t "FLIPPIN: ~A~%" q )
+													;( format t "FLIPPING: ~A~%" q )
 													( cond
 
+														;Flip BLACK to White
 														( ( string=  (nth q  board )  "B" ) 
-															( format t "BLAH: ~A~%" q )
 															(setf  (nth q  board ) "W")
 															( incf num-flipped )
 
 														)
 
+														;Flip White to Black
 														( ( string=  (nth q  board )  "W" ) 
 															(setf  (nth q  board ) "B")
 															( incf num-flipped )
 
 														)
-
 													)
-
 												) 
-
-
 											)
-
-
-
 										)
-
 										;Empty flip list and set curr iterator very high
 										;and set that a bracket has been found
 										(setf flip-list NIL)
@@ -611,36 +644,43 @@ Modifications:
 								
 							)
 							( t
-								;(setf flip-list NIL)
+								;Hit a gap, anything beyond this is certainly
+								;not a legal bracket
 								(setf flip-list (append  flip-list (list -1000)) )
-								( format t "Not Good~%")
-
+								;( format t "Not Good~%")
 							)
 						)
-
-
-						;(print "hi")
 					)
+					;clear out the flip list
 					(setf flip-list NIL)
-
 				)
-
-
-
-
-			)	
-
+			)
+			;reset your curr iterator back to the piece location
 			(setf curr location)
-
 		)
-		( format t "~A tiles flipped ~%" num-flipped)
+		;return how many tiles were flipped, as this will be used in min-max
+		;( format t "~A tiles flipped ~%" num-flipped)
 		num-flipped
 	)
 
 
 )
 
-( defun end-game? ( board player ) 
+( defun end-game? ( board ) 
 	"Check if both players just passed turns, thus ending the game"
+	( cond
+		;if both players skip, then game is over
+		(
+			( and 
+				( not ( null *blk_pass* ) )
+				( not ( null *wht_pass* ) )
+		  	)
+		  	T
+		)
 
+		;otherwise, game isn't over
+		( t
+			nil
+		)
+	)
 )
