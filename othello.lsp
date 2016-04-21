@@ -17,6 +17,8 @@ Modifications:
 ( load 'print-funcs )
 ( load 'game        )
 
+
+
 #|--------------------------------------------------------------------------|#
 #|                         Tournament Functions                             |#
 #|--------------------------------------------------------------------------|#
@@ -37,8 +39,21 @@ Modifications:
 ( defun othello-two-players ( &optional ( player nil ) ) 
 	"Starts up a game of othello where both players are human."
 
+	(setf new-board 
+	                        '( - - - - - - - -
+		   					   - - - - - - - - 
+		   					   - - - - - - - - 
+		                       - - - W B - - - 
+		                       - - - B W - - - 
+		                       - - - - - - - - 
+		                       - - - - - - - - 
+		                       - - - - - - - - 
+   		                     ) 
+
+	)
 	;just printing out the arg just to verify CLI is workin
 	(print player)
+	( end-turn "WHITE" new-board )
 )
 
 ( defun othello-init ()

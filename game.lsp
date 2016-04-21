@@ -108,31 +108,31 @@ Modifications:
 
 
 
-( defun prompt-turn ( player ) 
+( defun prompt-turn ( player board ) 
 	"Inform user it is their turn, validate the turn they input is acceptable"
 	( let 
         ( 
             input
             row
             col
+            temp-board
         )
 
-		( print-board *game_board* )
+		(setf temp-board (copy-list board))
+
+		( print-board temp-board )
 
 
 		( cond
 			;end game?
-			( ( end-game? *game_board* )
+			( ( end-game? board )
 
-				( declare-winner  ( count-discs *game_board* )   )			
+				( declare-winner  ( count-discs board )   )			
 
 			)
 
 			;pass player turn?
-			( ( pass-turn? player  *game_board* ) 
-
-
-
+			( ( pass-turn? player  board ) 
 				( cond
 					;Place Black Disc
 					( ( string= player "BLACK" ) 
@@ -148,7 +148,7 @@ Modifications:
 				)
 
 				( format t "NO MOVES AVAILABLE FOR: ~A~%" player )
-				( end-turn player )
+				( end-turn player board )
 			)
 
 			;otherwise, promt the user and let them play
@@ -171,15 +171,16 @@ Modifications:
 		        ( cond
 
 		            ;Place the disc if legal move
-		            ( (legal-move? player  *game_board* row col )
-		            	( place-disc player  *game_board* row col ) 
-		                ( end-turn player )
+		            ( (legal-move? player  temp-board row col )
+		            	( place-disc player  board row col ) 
+	            	 	( flip-at player board row col ) 
+		                ( end-turn player board )
 		            )
 
 		            ;else
 		            ( T 
 		                ( format t "~%Illegal Move. Please Try Again.~%" )
-		                ( prompt-turn player )
+		                ( prompt-turn player board )
 		            )
 		        )
 			)
@@ -224,23 +225,21 @@ Modifications:
 			)
 		)
 
-		;( flip-at player *game_board* row column )
 		;( end-turn player )
     )
 )
 
-( defun end-turn ( player )
+( defun end-turn ( player board )
 	"Switch turns to the other player"
-
 	( cond
 		;Switch to White Turn
 		( ( string= player "BLACK" ) 
-			( prompt-turn "WHITE" )
+			( prompt-turn "WHITE" board )
 		)
 
 		;Switch to Black Turn
 		( ( string= player "WHITE" ) 
-			( prompt-turn "BLACK" )
+			( prompt-turn "BLACK" board )
 		)
 	)
 )
@@ -258,7 +257,7 @@ Modifications:
         )
 
     
-		(setf temp-board (copy-list *game_board*))
+		(setf temp-board (copy-list board))
 
 		;incredibly bad version:
 		( loop for row from 1 to 8 do 
@@ -269,19 +268,18 @@ Modifications:
 		    	)
 				;(format t "row: ~A col: ~A ~%" row col)
 				( cond 
-					( ( string= "-" ( nth location *game_board* ) )
+					( ( string= "-" ( nth location temp-board ) )
 						
 						( cond 
-							( ( legal-move? player *game_board* row col ) 
+							( ( legal-move? player temp-board row col ) 
 								( incf moves )
-								(setf *game_board* (copy-list temp-board))
+								(setf temp-board (copy-list board))
 							)
 						)
 					)
 				)
 			)
 		)
-		(setf *game_board* (copy-list temp-board))
 
 		;(format t "~A Moves Available ~%" moves)
 		moves
