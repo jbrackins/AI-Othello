@@ -70,8 +70,17 @@ Modifications:
 ( defun othello ( &optional ( player nil ) ) 
 	"Starts up a game of othello."
 
-	;just printing out the arg just to verify CLI is workin
-	(print player)
+
+	( cond
+
+		;Prompt for colour if none given
+		( 
+			( not ( null player ) )
+			( setf player ( subseq player 0 1 ) )
+		)
+	)
+	( othello-two-players player )
+	;( othello-human-vs-ai player )
 )
 
 ( defun othello-two-players ( &optional ( player nil ) 
@@ -86,13 +95,109 @@ Modifications:
 							) 
 	"Starts up a game of othello where both players are human."
 
+
+	( cond
+
+		;Prompt for colour if none given
+		( 
+			( null player )
+			( setf player ( prompt-player-colour ) )
+		)
+	)
+
+
 	;just printing out the arg just to verify CLI is workin
 	;(print player)
 	( end-turn 'W board )
-	( play-again? player )
+	( prompt-play-again? player "OTHELLO-TWO-PLAYERS" )
+	( values )
 )
 
-( defun play-again? ( player )
+( defun othello-human-vs-ai  ( &optional ( player nil ) 
+							( board '( - - - - - - - -
+				   					   - - - - - - - - 
+				   					   - - - - - - - - 
+				                       - - - W B - - - 
+				                       - - - B W - - - 
+				                       - - - - - - - - 
+				                       - - - - - - - - 
+				                       - - - - - - - - ) ) 
+							) 
+	"Starts up a game of othello where one player is human, other is ai"
+	( let 
+        (  
+        	ai
+        )
+
+		( cond
+
+			;Prompt for colour if none given
+			( 
+				( null player )
+				( setf player ( prompt-player-colour ) )
+			)
+		)
+
+		( cond
+
+			;Set AI colour
+			( ( string= player 'B ) 
+				( setf ai 'W )
+			)
+			( ( string= player 'W ) 
+				( setf ai 'B )
+			)
+		)
+	)
+)
+
+( defun prompt-player-colour ()
+	"Ask the person what colour they want to be"
+	( let 
+        (  
+        	input
+        	choice	
+        )
+
+		( format t "Would you like to play as " )
+		( format t "~c[37;40mBLACK~c[0m or " #\ESC #\ESC  )
+		( format t "~c[30;47mWHITE~c[0m ?~%"   #\ESC #\ESC )
+		( format t "(~c[37;40mBLACK~c[0m moves first) > " #\ESC #\ESC  )
+
+
+		;get user input...
+		( setf input ( read-line ) )
+
+		( with-input-from-string ( stream input )
+			;...and set the FIRST number as ROW...
+			( setf choice ( read stream NIL NIL ) )
+
+		)
+
+		;toupper...
+		( setf choice (string-upcase choice ) )
+		( setf choice ( subseq choice 0 1 ) )
+
+		( cond
+
+			;Check if proper user input
+			( 
+				( or ( string= choice 'B )
+					 ( string= choice 'W)
+				)
+				;Correct, pass this as player choice
+				choice
+			)
+			;Otherwise, re-prompt because they entered something wrong
+			( T
+				( prompt-player-colour )
+			)
+		)
+
+    )
+)
+
+( defun prompt-play-again? ( player gametype )
 	"Ask the person if they would like to start over"
 	( let 
         (  
@@ -122,8 +227,32 @@ Modifications:
 				( or ( string= choice 'Y )
 					 ( string= choice 'YES)
 				)
-				;ensure Black pass flag is T
-				( othello-two-players player )
+
+				( cond
+
+					;CHECK GAMETYPE
+					( 
+						( string= gametype "OTHELLO-TWO-PLAYERS" )
+						( othello-two-players )
+					)
+
+				)
+			)
+
+			;End Game
+			( 
+				( or ( string= choice 'N )
+					 ( string= choice 'NO)
+				)
+
+				( format t "See Ya~%" )
+			)
+
+
+
+			;else: Reprompt
+			( T
+				( prompt-play-again? player gametype )
 			)
 		)
     )
