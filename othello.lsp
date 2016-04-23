@@ -89,6 +89,44 @@ Modifications:
 	;just printing out the arg just to verify CLI is workin
 	;(print player)
 	( end-turn 'W board )
+	( play-again? player )
+)
+
+( defun play-again? ( player )
+	"Ask the person if they would like to start over"
+	( let 
+        (  
+        	input
+        	choice	
+        )
+
+		( format t "Would you like to play again? [Y/N] " )
+
+
+		;get user input...
+		( setf input ( read-line ) )
+
+		( with-input-from-string ( stream input )
+			;...and set the FIRST number as ROW...
+			( setf choice ( read stream NIL NIL ) )
+
+		)
+
+		;toupper...
+		( setf choice (string-upcase choice ) )
+		
+		( cond
+
+			;Restart game
+			( 
+				( or ( string= choice 'Y )
+					 ( string= choice 'YES)
+				)
+				;ensure Black pass flag is T
+				( othello-two-players player )
+			)
+		)
+    )
 )
 
 ( defun othello-init ()
