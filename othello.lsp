@@ -16,13 +16,15 @@ Modifications:
 
 ( load 'print-funcs )
 ( load 'game        )
+( load 'minimax     )
 
 #|--------------------------------------------------------------------------|#
 #|                         Tournament Functions                             |#
 #|--------------------------------------------------------------------------|#
 
 ( defun make-move ( position player ply ) 
-	"function to allow Othello programs interact in computer tournament"
+  "function to allow Othello programs interact in computer tournament"
+  (car (car (cdr (minimax position ply player t))))
 
 )
 

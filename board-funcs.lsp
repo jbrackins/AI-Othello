@@ -20,7 +20,6 @@
 )
 
 (defun make-pos (pos-x pos-y)
-  
   (+ (- pos-x 1) (* (- pos-y 1) 8))
 )
 
@@ -90,7 +89,7 @@
   )
 )
 
-(defun make-move (board pos color)
+(defun make-move-int (board pos color)
   (let ( (new-board (copy-list board)) )
     (setf (nth pos new-board) color)
     (make-move-direction new-board pos NORTH     color nil)
@@ -107,7 +106,7 @@
 
 (defun make-safe-move (board pos color)
   (if (valid-move board pos color)
-    (make-move board pos color)
+    (make-move-int board pos color)
     board
   )
 )
