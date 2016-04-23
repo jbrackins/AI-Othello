@@ -28,7 +28,7 @@
   (cond
     ((= move NORTH) (> pos 7))
     ((= move NORTHEAST) (and (> pos 7) (not (= (mod pos 8) 7))))
-    ((= move EAST) (not (= (mod pos 8) 1)))
+    ((= move EAST) (not (= (mod pos 8) 7)))
     ((= move SOUTHEAST) (and (< pos 56) (not (= (mod pos 8) 7))))
     ((= move SOUTH) (< pos 56))
     ((= move SOUTHWEST) (and (< pos 56) (not (= (mod pos 8) 0))))
