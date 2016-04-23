@@ -67,6 +67,20 @@ Modifications:
     )
 )
 
+( defun print-player ( player )
+    ( cond
+
+        ;Black
+        ( ( string= player 'B ) 
+            ( format t  "~c[37;40mBLACK~c[0m " #\ESC #\ESC)
+        )
+
+        ;White
+        ( ( string= player 'W ) 
+            ( format t  "~c[30;47mWHITE~c[0m " #\ESC #\ESC)
+        )
+    )
+)
 
 ( defun print-square ( square )
         ( cond

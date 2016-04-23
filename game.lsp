@@ -16,17 +16,7 @@ Modifications:
 
 ( defparameter *blk_pass*  NIL )
 ( defparameter *wht_pass*  NIL )
-( defparameter *game_board* 
-	                        '( - - - - - - - -
-		   					   - - - - - - - - 
-		   					   - - - - - - - - 
-		                       - - - W B - - - 
-		                       - - - B W - - - 
-		                       - - - - - - - - 
-		                       - - - - - - - - 
-		                       - - - - - - - - 
-   		                     ) 
-)
+
 
 ( load 'print-funcs )
 
@@ -99,8 +89,10 @@ Modifications:
 
 		;Print out the score
 		( format t "~%GAME OVER. NO REMAINING MOVES~%" )
-		( format t "BLACK  SCORE: ~A DISCS~%" blk_score )
-		( format t "WHITE  SCORE: ~A DISCS~%" wht_score )
+		( print-player 'B )
+		( format t "  SCORE: ~A DISCS~%" blk_score )
+		( print-player 'W )
+		( format t "  SCORE: ~A DISCS~%" wht_score )
 		( format t "GAME RESULTS: ~A~%" winner )
 		( values )
     )
@@ -108,53 +100,58 @@ Modifications:
 
 
 
-( defun prompt-turn ( player ) 
+( defun prompt-turn ( player board ) 
 	"Inform user it is their turn, validate the turn they input is acceptable"
 	( let 
         ( 
             input
             row
             col
+            temp-board
         )
 
-		( print-board *game_board* )
+		(setf temp-board (copy-list board))
+
+		( print-board temp-board )
 
 
 		( cond
 			;end game?
-			( ( end-game? *game_board* )
+			( ( end-game? board )
 
-				( declare-winner  ( count-discs *game_board* )   )			
+				( declare-winner  ( count-discs board )   )			
 
 			)
 
 			;pass player turn?
-			( ( pass-turn? player  *game_board* ) 
-
-
-
+			( ( pass-turn? player  board ) 
 				( cond
 					;Place Black Disc
-					( ( string= player "BLACK" ) 
+					( ( string= player 'B ) 
 						;ensure Black pass flag is T
 						( setf *blk_pass* T )
 					)
 
 					;Place White Disc
-					( ( string= player "WHITE" ) 
+					( ( string= player 'W ) 
 						;ensure White pass flag is T
 						( setf *wht_pass* T )
 					)
 				)
 
-				( format t "NO MOVES AVAILABLE FOR: ~A~%" player )
-				( end-turn player )
+				( format t "NO MOVES AVAILABLE FOR: ")
+				( print-player player )
+				( format t "~%")
+
+				( end-turn player board )
 			)
 
 			;otherwise, promt the user and let them play
 			( t
 
-				( format t "PLAYER: ~A~%" player )
+				( format t "PLAYER: ")
+				( print-player player )
+				( format t "~%")
 				( format t "What is your move [row col]? " )
 
 
@@ -171,15 +168,16 @@ Modifications:
 		        ( cond
 
 		            ;Place the disc if legal move
-		            ( (legal-move? player  *game_board* row col )
-		            	( place-disc player  *game_board* row col ) 
-		                ( end-turn player )
+		            ( (legal-move? player  temp-board row col )
+		            	( place-disc player  board row col ) 
+	            	 	( flip-at player board row col ) 
+		                ( end-turn player board )
 		            )
 
 		            ;else
 		            ( T 
 		                ( format t "~%Illegal Move. Please Try Again.~%" )
-		                ( prompt-turn player )
+		                ( prompt-turn player board )
 		            )
 		        )
 			)
@@ -208,7 +206,7 @@ Modifications:
 
 		( cond
 			;Place Black Disc
-			( ( string= player "BLACK" ) 
+			( ( string= player 'B ) 
 				;place disc
 				( setf (nth location board) "B" )
 				;ensure Black pass flag is FALSE
@@ -216,7 +214,7 @@ Modifications:
 			)
 
 			;Place White Disc
-			( ( string= player "WHITE" ) 
+			( ( string= player 'W ) 
 				;place disc
 				(setf (nth location board) "W")
 				;ensure White pass flag is FALSE
@@ -224,23 +222,21 @@ Modifications:
 			)
 		)
 
-		;( flip-at player *game_board* row column )
 		;( end-turn player )
     )
 )
 
-( defun end-turn ( player )
+( defun end-turn ( player board )
 	"Switch turns to the other player"
-
 	( cond
 		;Switch to White Turn
-		( ( string= player "BLACK" ) 
-			( prompt-turn "WHITE" )
+		( ( string= player 'B ) 
+			( prompt-turn 'W board )
 		)
 
 		;Switch to Black Turn
-		( ( string= player "WHITE" ) 
-			( prompt-turn "BLACK" )
+		( ( string= player 'W ) 
+			( prompt-turn 'B board )
 		)
 	)
 )
@@ -258,7 +254,7 @@ Modifications:
         )
 
     
-		(setf temp-board (copy-list *game_board*))
+		(setf temp-board (copy-list board))
 
 		;incredibly bad version:
 		( loop for row from 1 to 8 do 
@@ -269,19 +265,18 @@ Modifications:
 		    	)
 				;(format t "row: ~A col: ~A ~%" row col)
 				( cond 
-					( ( string= "-" ( nth location *game_board* ) )
+					( ( string= "-" ( nth location temp-board ) )
 						
 						( cond 
-							( ( legal-move? player *game_board* row col ) 
+							( ( legal-move? player temp-board row col ) 
 								( incf moves )
-								(setf *game_board* (copy-list temp-board))
+								(setf temp-board (copy-list board))
 							)
 						)
 					)
 				)
 			)
 		)
-		(setf *game_board* (copy-list temp-board))
 
 		;(format t "~A Moves Available ~%" moves)
 		moves
@@ -535,12 +530,12 @@ Modifications:
         ;determine what colour the player pieces are,
         ;and what colour the opponent pieces are.
 		( cond
-			( ( string= player "BLACK" ) 
+			( ( string= player 'B ) 
 				(setf player-piece "B")
 				(setf opponent-piece "W")
 			)
 
-			( ( string= player "WHITE" ) 
+			( ( string= player 'W ) 
 				(setf player-piece "W")
 				(setf opponent-piece "B")
 			)
