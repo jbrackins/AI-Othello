@@ -17,6 +17,42 @@ Modifications:
 ( load 'print-funcs )
 ( load 'game        )
 
+#|--------------------------------------------------------------------------|#
+#|                               SAMPLE BOARDS                              |#
+#|--------------------------------------------------------------------------|#
+;The following are a few different sample boards one can read in to verify
+;a few different strategies for the game. Many of these board states were 
+;sourced from http://www.samsoft.org.uk/reversi/strategy.htm and 
+;exemplify certain strategies or notewothy nuances in othello strategy.
+
+( defparameter *board-start* 
+	                        '( - - - - - - - -
+		   					   - - - - - - - - 
+		   					   - - - - - - - - 
+		                       - - - W B - - - 
+		                       - - - B W - - - 
+		                       - - - - - - - - 
+		                       - - - - - - - - 
+		                       - - - - - - - - 
+   		                     ) 
+)
+
+;A general fallacy to othello is that ending up with the most discs is the 
+;only major goal. However, this game illustrates that having the most pieces
+;does not always translate to victory. In this scenario, white is forced to 
+;skip every turn, and black will manage to flip over enough tiles to gain
+;victory.
+( defparameter *board-too-much-too-soon* 
+	                        '( - W W W W W W -
+		   					   W W W W W W W W 
+		   					   W W W W W W W W 
+		                       W W W B W W W W  
+		                       W W W W W W W W 
+		                       W W W W W W W W  
+		                       W W W W W W W W 
+		                       - W W W W W W -
+   		                     ) 
+)
 
 
 #|--------------------------------------------------------------------------|#
@@ -36,24 +72,21 @@ Modifications:
 	(print player)
 )
 
-( defun othello-two-players ( &optional ( player nil ) ) 
+( defun othello-two-players ( &optional ( player nil ) 
+							( board '( - - - - - - - -
+				   					   - - - - - - - - 
+				   					   - - - - - - - - 
+				                       - - - W B - - - 
+				                       - - - B W - - - 
+				                       - - - - - - - - 
+				                       - - - - - - - - 
+				                       - - - - - - - - ) ) 
+							) 
 	"Starts up a game of othello where both players are human."
 
-	(setf new-board 
-	                        '( - - - - - - - -
-		   					   - - - - - - - - 
-		   					   - - - - - - - - 
-		                       - - - W B - - - 
-		                       - - - B W - - - 
-		                       - - - - - - - - 
-		                       - - - - - - - - 
-		                       - - - - - - - - 
-   		                     ) 
-
-	)
 	;just printing out the arg just to verify CLI is workin
-	(print player)
-	( end-turn "WHITE" new-board )
+	;(print player)
+	( end-turn 'W board )
 )
 
 ( defun othello-init ()

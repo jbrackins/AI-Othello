@@ -16,17 +16,7 @@ Modifications:
 
 ( defparameter *blk_pass*  NIL )
 ( defparameter *wht_pass*  NIL )
-( defparameter *game_board* 
-	                        '( - - - - - - - -
-		   					   - - - - - - - - 
-		   					   - - - - - - - - 
-		                       - - - W B - - - 
-		                       - - - B W - - - 
-		                       - - - - - - - - 
-		                       - - - - - - - - 
-		                       - - - - - - - - 
-   		                     ) 
-)
+
 
 ( load 'print-funcs )
 
@@ -99,8 +89,10 @@ Modifications:
 
 		;Print out the score
 		( format t "~%GAME OVER. NO REMAINING MOVES~%" )
-		( format t "BLACK  SCORE: ~A DISCS~%" blk_score )
-		( format t "WHITE  SCORE: ~A DISCS~%" wht_score )
+		( print-player 'B )
+		( format t "  SCORE: ~A DISCS~%" blk_score )
+		( print-player 'W )
+		( format t "  SCORE: ~A DISCS~%" wht_score )
 		( format t "GAME RESULTS: ~A~%" winner )
 		( values )
     )
@@ -135,26 +127,31 @@ Modifications:
 			( ( pass-turn? player  board ) 
 				( cond
 					;Place Black Disc
-					( ( string= player "BLACK" ) 
+					( ( string= player 'B ) 
 						;ensure Black pass flag is T
 						( setf *blk_pass* T )
 					)
 
 					;Place White Disc
-					( ( string= player "WHITE" ) 
+					( ( string= player 'W ) 
 						;ensure White pass flag is T
 						( setf *wht_pass* T )
 					)
 				)
 
-				( format t "NO MOVES AVAILABLE FOR: ~A~%" player )
+				( format t "NO MOVES AVAILABLE FOR: ")
+				( print-player player )
+				( format t "~%")
+
 				( end-turn player board )
 			)
 
 			;otherwise, promt the user and let them play
 			( t
 
-				( format t "PLAYER: ~A~%" player )
+				( format t "PLAYER: ")
+				( print-player player )
+				( format t "~%")
 				( format t "What is your move [row col]? " )
 
 
@@ -209,7 +206,7 @@ Modifications:
 
 		( cond
 			;Place Black Disc
-			( ( string= player "BLACK" ) 
+			( ( string= player 'B ) 
 				;place disc
 				( setf (nth location board) "B" )
 				;ensure Black pass flag is FALSE
@@ -217,7 +214,7 @@ Modifications:
 			)
 
 			;Place White Disc
-			( ( string= player "WHITE" ) 
+			( ( string= player 'W ) 
 				;place disc
 				(setf (nth location board) "W")
 				;ensure White pass flag is FALSE
@@ -233,13 +230,13 @@ Modifications:
 	"Switch turns to the other player"
 	( cond
 		;Switch to White Turn
-		( ( string= player "BLACK" ) 
-			( prompt-turn "WHITE" board )
+		( ( string= player 'B ) 
+			( prompt-turn 'W board )
 		)
 
 		;Switch to Black Turn
-		( ( string= player "WHITE" ) 
-			( prompt-turn "BLACK" board )
+		( ( string= player 'W ) 
+			( prompt-turn 'B board )
 		)
 	)
 )
@@ -533,12 +530,12 @@ Modifications:
         ;determine what colour the player pieces are,
         ;and what colour the opponent pieces are.
 		( cond
-			( ( string= player "BLACK" ) 
+			( ( string= player 'B ) 
 				(setf player-piece "B")
 				(setf opponent-piece "W")
 			)
 
-			( ( string= player "WHITE" ) 
+			( ( string= player 'W ) 
 				(setf player-piece "W")
 				(setf opponent-piece "B")
 			)
