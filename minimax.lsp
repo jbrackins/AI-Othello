@@ -77,6 +77,8 @@ Functions called:
         ; initialize current best path to nil
         (best-path nil)
 
+        ;location of the best move
+        (best-location nil)
         ; initialize current best score to negative infinity
         (best-score -1000000)
 
@@ -103,19 +105,26 @@ Functions called:
         )
 	(when (and alpha? (> best-score alpha))
 	  (setf alpha best-score)
-	  (print 'trimmed)
+	  ;(print 'trimmed)
 	  (return 2)
 	)
 	(when (and (not alpha?) (> best-score beta ))
 	  (setf beta best-score)
-	  (print 'trimmed)
+	  ;(print 'trimmed)
 	  (return 2)
 	)
 
       )
 
             ; return (value path) list when done
+
       (list best-score best-path)
     )
   )
 )
+
+
+
+
+
+

@@ -15,7 +15,51 @@ Modifications:
 #|--------------------------------------------------------------------------|#
 
 
-( load 'print-funcs )
+(defun find-location ( old-board new-board )
+    "Determine location of piece placed"
+    (let
+      (
+       ; generate list of sucessor positions
+        ( old ( flatten-board old-board ) )
+        ( new ( flatten-board new-board ) )
+        location   
+        ( i 0 )
+      )
+
+      ;(print-board old-board)
+      ;(print-board new-board)
+
+      ;(print-board old)
+      ;(print-board new)
+      ( loop while ( < i 64 ) do     
+       ; (print "LOOPIN")
+        (cond
+          ( ( not (string= ( nth i old ) ( nth i new )) )
+                (setf location i)
+              ( setf i 100 )
+          
+          )
+
+        )
+        (incf i)
+      )
+      location
+    )
+)
+
+(defun flatten-board ( board )
+    "flatten every piece to the same symbol"
+
+  (map 'list
+      #'(lambda (x) 
+        (if ( or (string= x 'B) (string= x 'W) ) 
+          ;TRUE
+          (setf x 'X) 
+          ;FALSE
+          (setf x '-))
+        )
+    board)
+)
 
 
 ( defun loc-to-row-col ( location )

@@ -38,6 +38,18 @@ Modifications:
                              ) 
 )
 
+( defparameter *board-two* 
+	                        '( - - - - - - - -
+                               - - - - - - - - 
+                               - - - - - - - - 
+                               - - - W B - - - 
+                               - - - B B - - - 
+                               - - - - B - - - 
+                               - - - - - - - - 
+                               - - - - - - - - 
+                             ) 
+)
+
 ;A general fallacy to othello is that ending up with the most discs is the 
 ;only major goal. However, this game illustrates that having the most pieces
 ;does not always translate to victory. In this scenario, white is forced to 
@@ -62,11 +74,19 @@ Modifications:
 
 ( defun make-move ( position player ply ) 
   "function to allow Othello programs interact in computer tournament"
-  (setf _ALPHA_ -1000000)
-  (setf _BETA_   1000000)
-  (car (car (cdr (minimax position ply player t))))
+    ( let 
+        (
+            ( old position )
+            (move  (car (car (cdr (minimax position ply player t)))) )
 
+        )
+
+        ;RETURN THE ROW-COLUMN PAIR FOR THE MOVE MADE BY AI
+        ( loc-to-row-col  ( find-location old move )  )
+    )
 )
+
+
 
 ( defun c-v-c ( board color )
   (cond 
