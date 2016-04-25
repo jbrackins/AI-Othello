@@ -28,14 +28,14 @@ Modifications:
 
 ( defparameter *board-start* 
 	                        '( - - - - - - - -
-		   					   - - - - - - - - 
-		   					   - - - - - - - - 
-		                       - - - W B - - - 
-		                       - - - B W - - - 
-		                       - - - - - - - - 
-		                       - - - - - - - - 
-		                       - - - - - - - - 
-   		                     ) 
+                               - - - - - - - - 
+                               - - - - - - - - 
+                               - - - W B - - - 
+                               - - - B W - - - 
+                               - - - - - - - - 
+                               - - - - - - - - 
+                               - - - - - - - - 
+                             ) 
 )
 
 ;A general fallacy to othello is that ending up with the most discs is the 
@@ -45,14 +45,14 @@ Modifications:
 ;victory.
 ( defparameter *board-too-much-too-soon* 
 	                        '( - W W W W W W -
-		   					   W W W W W W W W 
-		   					   W W W W W W W W 
-		                       W W W B W W W W  
-		                       W W W W W W W W 
-		                       W W W W W W W W  
-		                       W W W W W W W W 
-		                       - W W W W W W -
-   		                     ) 
+                               W W W W W W W W 
+                               W W W W W W W W 
+                               W W W B W W W W  
+                               W W W W W W W W 
+                               W W W W W W W W  
+                               W W W W W W W W 
+                               - W W W W W W -
+                             ) 
 )
 
 
@@ -62,8 +62,18 @@ Modifications:
 
 ( defun make-move ( position player ply ) 
   "function to allow Othello programs interact in computer tournament"
+  (setf _ALPHA_ -1000000)
+  (setf _BETA_   1000000)
   (car (car (cdr (minimax position ply player t))))
 
+)
+
+( defun c-v-c ( board color )
+  (cond 
+    ( (setf board (make-move board color 4))
+      (print-board board )
+      (c-v-c board (other-color color)) )
+  )
 )
 
 
@@ -148,6 +158,9 @@ Modifications:
 				( setf ai 'B )
 			)
 		)
+
+
+        
 	)
 )
 
