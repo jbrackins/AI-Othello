@@ -14,9 +14,6 @@ Modifications:
 #|                               Global Vars                                |#
 #|--------------------------------------------------------------------------|#
 
-( defparameter *blk_pass*  NIL )
-( defparameter *wht_pass*  NIL )
-
 
 ( load 'print-funcs )
 
@@ -117,7 +114,7 @@ Modifications:
 
 		( cond
 			;end game?
-			( ( end-game? board )
+			( ( end-game? player board )
 
 				( declare-winner  ( count-discs board )   )			
 
@@ -125,19 +122,6 @@ Modifications:
 
 			;pass player turn?
 			( ( pass-turn? player  board ) 
-				( cond
-					;Place Black Disc
-					( ( string= player 'B ) 
-						;ensure Black pass flag is T
-						( setf *blk_pass* T )
-					)
-
-					;Place White Disc
-					( ( string= player 'W ) 
-						;ensure White pass flag is T
-						( setf *wht_pass* T )
-					)
-				)
 
 				( format t "NO MOVES AVAILABLE FOR: ")
 				( print-player player )
@@ -209,16 +193,12 @@ Modifications:
 			( ( string= player 'B ) 
 				;place disc
 				( setf (nth location board) "B" )
-				;ensure Black pass flag is FALSE
-				( setf *blk_pass* NIL )
 			)
 
 			;Place White Disc
 			( ( string= player 'W ) 
 				;place disc
 				(setf (nth location board) "W")
-				;ensure White pass flag is FALSE
-				( setf *wht_pass* NIL )
 			)
 		)
 
@@ -351,9 +331,6 @@ Modifications:
 
         	)
 		)
-
-
-
         legal
 	)
 )
@@ -661,21 +638,46 @@ Modifications:
 
 )
 
-( defun end-game? ( board ) 
+( defun end-game? ( player board )
 	"Check if both players just passed turns, thus ending the game"
-	( cond
-		;if both players skip, then game is over
-		(
-			( and 
-				( not ( null *blk_pass* ) )
-				( not ( null *wht_pass* ) )
-		  	)
-		  	T
+	( let 
+        ( 
+        	opponent
+        	player-moves
+        	opponent-moves
+        )
+
+		( cond
+			;Opponent is white
+			( ( string= player 'B ) 
+				( setf opponent 'W )
+			)
+
+			;Opponent is Black
+			( ( string= player 'W ) 
+				( setf opponent 'B )
+			)
 		)
 
-		;otherwise, game isn't over
-		( t
-			nil
+		( setf player-moves   ( count-legal-moves player board   ) )
+		( setf opponent-moves ( count-legal-moves opponent board ) )
+
+
+		
+		( cond
+			;if both players skip, then game is over
+			(
+				( and 
+					( < player-moves   1 )
+					( < opponent-moves 1 )
+			  	)
+			  	T
+			)
+
+			;otherwise, game isn't over
+			( t
+				nil
+			)
 		)
-	)
+    )
 )
