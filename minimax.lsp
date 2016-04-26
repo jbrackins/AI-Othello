@@ -30,12 +30,6 @@ Functions called:
 
           Note: these functions may need additional arguments.
 |#
-(load 'board-funcs)
-(load 'heuristic-funcs)
-(load 'print-funcs)
-
-(setf _ALPHA_ -1000000)
-(setf _BETA_  -1000000)
 
 (defun deepenough (depth)
   (< depth 1)
@@ -68,7 +62,7 @@ Functions called:
   (if (or (deepenough depth) (null (move-generator position color)))
     (list (static position color) nil)
 
-        ; otherwise, generate successors and run minimax recursively
+    ; otherwise, generate successors and run minimax recursively
     (let
       (
         ; generate list of sucessor positions
@@ -112,10 +106,7 @@ Functions called:
         (when (> alpha beta)
           (return)
         )
-
       )
-
-
       ; return (value path) list when done
       (list best-score best-path)
     )

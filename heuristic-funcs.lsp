@@ -1,12 +1,14 @@
+;I'm gonna try adjusting the weights a bit so
+;that the spots around corners are less desirable...
 (defconstant score-weights
-  '( 16 08 08 08 08 08 08 16
-     08	02 02 02 02 02 02 08
+  '( 16 02 08 08 08 08 02 16
+     02	02 02 02 02 02 02 02
      08 02 04 04 04 04 02 08
      08 02 04 01 01 04 02 08
      08 02 04 01 01 04 02 08
      08 02 04 04 04 04 02 08
-     08 02 02 02 02 02 02 08
-     16 08 08 08 08 08 08 16 )
+     02 02 02 02 02 02 02 02
+     16 02 08 08 08 08 02 16 )
 )
 
 (defun other-color (color)
