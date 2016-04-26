@@ -140,6 +140,7 @@ Written Spring 2016 for CSC447/547 AI class.
 ( load 'boards          )
 ( load 'board-funcs     )
 ( load 'heuristic-funcs )
+( load 'prompt          )
 
 #|--------------------------------------------------------------------------|#
 #|                         Tournament Functions                             |#
