@@ -27,6 +27,7 @@ Modifications:
 
 ( defun othello ( &optional ( player nil ) ) 
   "Starts up a game of othello."
+  ( print-title )
   ( cond
     ;Prompt for colour if none given
     ( 
@@ -35,7 +36,7 @@ Modifications:
     )
   )
   ;( othello-human-vs-human player )
-  ( othello-human-vs-ai player )
+  ( prompt-gametype player )
 )
 
 ( defun make-move ( position player ply ) 
@@ -61,7 +62,7 @@ Modifications:
   )
 )
 
-( defun othello-ai-vs-ai ( &optional ( board (new-board) ) ) 
+( defun othello-ai-vs-ai ( &optional ( board ( copy-list (new-board) ) ) ) 
   "Othello AI vs Othello AI"
   ( let 
     (
