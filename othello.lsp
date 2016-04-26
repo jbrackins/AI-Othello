@@ -86,11 +86,12 @@ reducing the number of expanded nodes in the search algorithm.
 # Program Usage
 * Command Line Usage:
     
-    clisp othello.lsp <player> (Black or White)
+    clisp othello.lsp [ player ] (Black or White)
 
 * CLISP Usage:
 
     (load 'othello)
+
     ( othello [player] )
 
 # Othello Tournament
