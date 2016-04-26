@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="description" content="Othello-ai :  Lisp based Othello program designed to investigate AI game playing techniques. ">
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Othello-ai</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/jbrackins/othello-ai">View on GitHub</a>
+
+          <h1 id="project_title">Othello-ai</h1>
+          <h2 id="project_tagline"> Lisp based Othello program designed to investigate AI game playing techniques. </h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/jbrackins/othello-ai/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/jbrackins/othello-ai/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h1>
+<a id="ai-othello" class="anchor" href="#ai-othello" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>AI-Othello</h1>
+
+<p>Lisp based Othello program designed to investigate AI game playing techniques. </p>
+
+<h1>
+<a id="othello-game-description" class="anchor" href="#othello-game-description" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Othello Game Description</h1>
+
+<p>Othello, also known as Reversi, is a game played on an 8x8 grid with 64 discs 
+that are black on one side and white on the other. Based on the following 
+start position:</p>
+
+<pre><code>- - - - - - - -
+- - - - - - - - 
+- - - - - - - - 
+- - - W B - - - 
+- - - B W - - - 
+- - - - - - - - 
+- - - - - - - - 
+- - - - - - - - 
+</code></pre>
+
+<p>the two players (BLACK and WHITE) alternate turns placing discs on the board. 
+In order for a valid turn to be made, discs must be placed to surround enemy 
+pieces. Whenever a row, column, or diagonal of contiguous white pieces are 
+surrounded on both ends by black pieces, the white pieces are "flipped" to the 
+black side, making them black piecs. ( The opposite applies for flipping to 
+white pieces, naturally. ) This is referred to as "flanking", or "bracketing".</p>
+
+<p>In the following demonstration, The black player moves first, places a disc in 
+row 6, column 5. This causes the white disc in row 5, column 5 to flip to the 
+black side.</p>
+
+<pre><code>- - - - - - - -     - - - - - - - -     - - - - - - - - 
+- - - - - - - -     - - - - - - - -     - - - - - - - - 
+- - - - - - - -     - - - - - - - -     - - - - - - - - 
+- - - W B - - -  =&gt; - - - W B - - -  =&gt; - - - W B - - - 
+- - - B W - - -  =&gt; - - - B W - - -  =&gt; - - - B B - - -  
+- - - - - - - -     - - - - B - - -     - - - - B - - - 
+- - - - - - - -     - - - - - - - -     - - - - - - - - 
+- - - - - - - -     - - - - - - - -     - - - - - - - - 
+</code></pre>
+
+<p>Whenever a player cannot place a disc that will bracket enemy pieces, that 
+player must forfeit their current turn.</p>
+
+<p>The game continues until either the board is filled, or once a scenario occurs 
+in which neither player can perform a legal move. At this point, the number of 
+discs are counted for each side and the player with the most discs is the
+victor.</p>
+
+<h1>
+<a id="program-description" class="anchor" href="#program-description" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Program Description</h1>
+
+<p>For this project, a Lisp program has been implemented for the Othello game. 
+There are options for human vs human, human vs ai, and ai vs ai. The AI 
+implemented for this program is designed to investigate AI game playing 
+techniques. In particular, this program uses the minimax strategy with 
+alpha-beta pruning.</p>
+
+<h1>
+<a id="minimax" class="anchor" href="#minimax" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Minimax</h1>
+
+<p>Minimax is an algorithm that works well for two-player board games, and exists 
+as a model for making moves based on knowledge of what the other player will do. 
+This algorithm opperates on the truism "What is good for my opponent is bad for 
+me". The general idea of minimax is the 
+following:</p>
+
+<ol>
+<li>Look at all available moves</li>
+<li>Assign a rating to each board position that results form each move</li>
+<li>Pick the move with the [minimum/maximum] point rating.</li>
+</ol>
+
+<p>This algorithm alternates step 3 for minimum and maximum for the player 
+[maximum] and their opponent [minimum]. One of the benefits of this method is 
+that the point ratings work for both the player moves and the opponent moves; 
+alternating looking at minimum during opponent's turn and maximum during player 
+turn is sufficient. Minimax is performed by creating a graph of available moves 
+and performing depth-first search.</p>
+
+<p>( Minimax Description Source: Land of Lisp, Conrad Barski )</p>
+
+<h1>
+<a id="alpha-beta-pruning" class="anchor" href="#alpha-beta-pruning" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Alpha-beta Pruning</h1>
+
+<p>Alpha beta pruning is a search algorithm that decreases the number of nodes 
+needed to be evaluated by the minimax algorithm. This algorithm stops 
+evaluating a particular move when at least one possibility has been found 
+that renders the move to be worse than a previously examined move available 
+for the current player. As a result, the returned solution from minimax without 
+alpha-beta pruning will be identical to the solution from minimax with 
+alpha-beta pruning. The major difference is the amount of time saved by 
+reducing the number of expanded nodes in the search algorithm.</p>
+
+<p>( Alpha-beta Pruning Source: <a href="https://en.wikipedia.org/wiki/Alpha-beta_pruning">https://en.wikipedia.org/wiki/Alpha-beta_pruning</a> )</p>
+
+<h1>
+<a id="program-usage" class="anchor" href="#program-usage" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Program Usage</h1>
+
+<ul>
+<li>
+<p>Command Line Usage:</p>
+
+<p>clisp othello.lsp (player: Black or White)</p>
+</li>
+<li>
+<p>CLISP Usage:</p>
+
+<p>(load 'othello)</p>
+
+<p>( othello [player] )</p>
+</li>
+</ul>
+
+<h1>
+<a id="othello-tournament" class="anchor" href="#othello-tournament" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Othello Tournament</h1>
+
+<p>For the Spring 2016 CSC 447/547 course, we are holding an Othello tournament 
+in which our program will compete against the programs written by other 
+students in the course. in order to facilitate the programs playing against one 
+another, the following torunament functions have been supplied:</p>
+
+<ul>
+<li>( make-move position player ply ) </li>
+</ul>
+
+<p>This function takes the current board position, the current player who has the 
+next move, and the depth of search (or ply, to look ahead in the game tree). 
+It returns a ( row col ) list that specifies the move selected by the minimax 
+function, or NIL if no legal move exists.</p>
+
+<ul>
+<li>( othello-init )</li>
+</ul>
+
+<p>Another tournament function is othello-init, which takes no arguments. This 
+function is called once, prior to the start of tournament play. Initialization 
+code may be placed in this routine if necessary, but our implementation does 
+not use this function at all.</p>
+
+<h1>
+<a id="references" class="anchor" href="#references" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>References</h1>
+
+<p>A fair bit of research was put into this program for learning the rules to 
+Othello and gaining an understanding for implementing our strategies. Some 
+sites used for reference:</p>
+
+<ul>
+<li>Reversi wikipedia page: <a href="https://en.wikipedia.org/wiki/Reversi">https://en.wikipedia.org/wiki/Reversi</a>
+</li>
+<li>Othello wiki-how  page: <a href="http://www.wikihow.com/Play-Othello">http://www.wikihow.com/Play-Othello</a>
+</li>
+<li>Reversi Strategy Guide: <a href="http://www.samsoft.org.uk/reversi/strategy.htm">http://www.samsoft.org.uk/reversi/strategy.htm</a>
+</li>
+<li>A-B Pruning wikipedia page: <a href="https://en.wikipedia.org/wiki/Alpha-beta_pruning">https://en.wikipedia.org/wiki/Alpha-beta_pruning</a>
+</li>
+<li>Land of Lisp Programming Book: <a href="http://dl.acm.org/citation.cfm?id=1951916">http://dl.acm.org/citation.cfm?id=1951916</a>
+</li>
+</ul>
+
+<h1>
+<a id="authors" class="anchor" href="#authors" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Authors</h1>
+
+<ul>
+<li>J. Anthony Brackins</li>
+<li>Marcus Haberling</li>
+</ul>
+
+<p>Written Spring 2016 for CSC447/547 AI class.</p>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Othello-ai maintained by <a href="https://github.com/jbrackins">jbrackins</a></p>
+        <p>Published with <a href="https://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
