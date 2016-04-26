@@ -1,6 +1,15 @@
 #|
                     ***** GAME.LSP *****
 
+Functions containing the majority of the rule-space for running the 
+othello game. Originally started out as purely human vs human 
+othello game rules, which explains the overall redundancy of some of these 
+functions compared to a lot of the other routines written for this project.
+Some deprecated functions have been noted in documentation but have still 
+been left in the file for posterity. Since human vs human was not explicity 
+detailed in the assignment description, we hope that some of the redundant 
+rules will not negatively influence the overall grade of the project ;)
+
 Author:  J. Anthony Brackins, Marcus Haberling
 
 Written Spring 2016 for CSC447/547 AI class.
