@@ -171,6 +171,33 @@ Modifications:
     )
 )
 
+( defun prompt-ai ( color board ) 
+    "Prompt AI to perform their move"
+    ( let 
+        (
+           row-col
+        )
+
+        ( setf temp board )
+        ( cond
+            ( 
+
+                ( get-valid-moves board color) 
+                ( setf row-col (make-move board color 4) )
+                ;Perform Move If there is a valid one
+                ( setf board ( place-disc color board (car row-col) (cadr row-col)) )
+                (setf board ( car ( flip-at color board (car row-col) (cadr row-col) ) ) )
+                ( format t "Here Is My Move: ~A ~A~%" (car row-col) (cadr row-col) )
+            )
+            ( T
+                ( setf board temp )
+                ( format t "No Moves Available...~%")
+            ) 
+        )
+        board
+    )
+)
+
 
 
 ( defun prompt-turn ( player board ) 
@@ -229,8 +256,8 @@ Modifications:
 
                     ;Place the disc if legal move
                     ( (legal-move? player  temp-board row col )
-                        ( place-disc player  board row col ) 
-                        ( flip-at player board row col ) 
+                        ( setf board ( place-disc player  board row col ) )
+                        ( setf board ( car ( flip-at player board row col ) ) )
                         ;( end-turn player board )
                     )
 
@@ -242,7 +269,7 @@ Modifications:
                 )
             )
         )
-        ( values )
+        board
     )
 )
 

@@ -78,7 +78,6 @@ Modifications:
         (
             ( old position )
             (move  (car (car (cdr (minimax position ply player t)))) )
-
         )
 
         ;RETURN THE ROW-COLUMN PAIR FOR THE MOVE MADE BY AI
@@ -87,35 +86,24 @@ Modifications:
     )
 )
 
-
-
-( defun c-v-c ( board color )
+( defun othello-ai-vs-ai ( &optional 
+                            ( board '( - - - - - - - -
+                                       - - - - - - - - 
+                                       - - - - - - - - 
+                                       - - - W B - - - 
+                                       - - - B W - - - 
+                                       - - - - - - - - 
+                                       - - - - - - - - 
+                                       - - - - - - - - ) ) 
+                        ) 
     ( let 
         (
+           (color 'B)
            row-col
         )
 
         ( loop while ( not (end-game? color board) ) do 
-            ( setf temp board )
-            ( cond
-
-
-
-                ( 
-                    ( get-valid-moves board color) 
-                    ( setf row-col (make-move board color 4) )
-                    ;Perform Move If there is a valid one
-                    ( setf board ( place-disc color board (car row-col) (cadr row-col)) )
-                    (setf board ( car ( flip-at color board (car row-col) (cadr row-col) ) ) )
-                    (print-board board)
-                    ( format t "Placed Disc at: ~A~%" row-col )
-                )
-                ( T
-                    ( setf board temp )
-                    ( format t "No Moves Available...~%")
-                ) 
-            )
-
+            ( setf board ( prompt-ai color board ) )
             ( setf color ( other-color color ) )
         )
         ( declare-winner (count-discs board ) )
@@ -125,8 +113,6 @@ Modifications:
 
 ( defun othello ( &optional ( player nil ) ) 
 	"Starts up a game of othello."
-
-
 	( cond
 
 		;Prompt for colour if none given
@@ -135,8 +121,8 @@ Modifications:
 			( setf player ( subseq player 0 1 ) )
 		)
 	)
-	( othello-two-players player )
-	;( othello-human-vs-ai player )
+	;( othello-two-players player )
+	( othello-human-vs-ai player )
 )
 
 ( defun othello-two-players ( &optional ( player nil ) 
@@ -180,13 +166,12 @@ Modifications:
 				                       - - - - - - - - ) ) 
 							) 
 	"Starts up a game of othello where one player is human, other is ai"
-	;( let 
-    ;    (  
-        	;ai
-    ;    )
+	( let 
+        (  
+        	ai
+        )
 
 		( cond
-
 			;Prompt for colour if none given
 			( 
 				( null player )
@@ -194,8 +179,9 @@ Modifications:
 			)
 		)
 
-		( cond
 
+        ;(print player)
+		( cond
 			;Set AI colour
 			( ( string= player 'B ) 
 				( setf ai 'W )
@@ -205,22 +191,31 @@ Modifications:
 			)
 		)
 
-        (setf i 0)
-        ;( loop while ( < i 64 ) do     
+        ;(print ai)
 
-;            ( print-board board)
-;
- ;           (setf move ( make-move board ai 4 ) )
-;
- ;           ( place-disc ai  board (car move) (cadr move) ) 
-  ;          ( flip-at ai board (car move) (cadr move) ) 
-   ;         ( format t "ATTEMPTED MOVE: ~A~%" move )
-;
-            ;( end-turn player board )
-;
- ;           (prompt-turn player board)
-  ;      )        
-	;)
+        ( loop while ( not 
+                        ( and (end-game? player board) 
+                              (end-game? ai     board) ) ) do 
+            ( cond
+
+                ;Player = Black; AI = WHITE
+                ( ( string= player 'B ) 
+                    ( setf board ( prompt-turn player board ) )
+                    ( print-board board )
+                    ( setf board ( prompt-ai   ai     board ) )
+                )
+                ;Player = WHITE; AI = BLACK
+                ( ( string= player 'W ) 
+                    ( setf board ( prompt-ai   ai     board ) )
+                    ( setf board ( prompt-turn player board ) )
+                    ( print-board board )
+                )
+            )
+        )
+        ( declare-winner (count-discs board ) )
+        ( prompt-play-again? player "OTHELLO-HUMAN-VS-AI" )
+
+    )
 )
 
 ( defun prompt-player-colour ()
@@ -307,6 +302,14 @@ Modifications:
 						( string= gametype "OTHELLO-TWO-PLAYERS" )
 						( othello-two-players )
 					)
+                    ( 
+                        ( string= gametype "OTHELLO-AI-VS-AI" )
+                        ( othello-ai-vs-ai )
+                    )
+                    ( 
+                        ( string= gametype "OTHELLO-HUMAN-VS-AI" )
+                        ( othello-human-vs-ai )
+                    )
 
 				)
 			)
