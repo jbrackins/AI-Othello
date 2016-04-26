@@ -86,6 +86,7 @@ Modifications:
     )
 )
 
+;renamed from c-v-c
 ( defun othello-ai-vs-ai ( &optional 
                             ( board '( - - - - - - - -
                                        - - - - - - - - 
@@ -101,7 +102,6 @@ Modifications:
            (color 'B)
            row-col
         )
-
         ( loop while ( not (end-game? color board) ) do 
             ( setf board ( prompt-ai color board ) )
             ( setf color ( other-color color ) )
