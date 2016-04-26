@@ -85,7 +85,7 @@ Modifications:
 
 ( defun othello-human-vs-human  ( &optional 
                                   ( player nil ) 
-                                  ( board ( new-board ) ) 
+                                  ( board ( copy-list (new-board) ) ) 
                                 ) 
   "Starts up a game of othello where both players are human."
 
@@ -98,12 +98,14 @@ Modifications:
     ( setf board ( prompt-turn 'B board ) )
     ( setf board ( prompt-turn 'W board ) )    
   )
+  ( print-board board ) 
+  ( declare-winner (count-discs board ) )
   ( prompt-play-again? player "OTHELLO-HUMAN-VS-HUMAN" )
   ( values )
 )
 
 ( defun othello-human-vs-ai  ( &optional ( player nil ) 
-                            ( board (new-board) ) 
+                             ( board ( copy-list (new-board) ) )
                             ) 
   "Starts up a game of othello where one player is human, other is ai"
   ( let 

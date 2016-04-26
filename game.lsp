@@ -758,20 +758,17 @@ Modifications:
       ( setf choice ( read stream NIL NIL ) )
     )
 
-    ;get first part of the input
-    ( setf choice ( subseq choice 0 1 ) )
-
     ( cond
       ( ( numberp choice )
         ( prompt-player-colour )
       )
       ;Check if proper user input
       ( 
-        ( or ( string= (string-upcase choice ) 'B )
-             ( string= (string-upcase choice ) 'W)
+        ( or ( string= ( subseq (string-upcase choice ) 0 1 ) 'B )
+             ( string= ( subseq (string-upcase choice ) 0 1 ) 'W ) 
         )
         ;Correct, pass this as player choice
-        choice
+        ( subseq (string-upcase choice ) 0 1 )
       )
       ;Otherwise, re-prompt because they entered something wrong
       ( T
