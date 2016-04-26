@@ -9,7 +9,17 @@ Modifications:
 
 |#
 
-
+#|
+  Name: find-location
+  Description:
+  looks at the board states before and after placing 
+  a disc from the minimax function to determine the 
+  location of the board in which a piece was placed. 
+  This can later be converted to row & column values.
+  Paramaters:
+    old-board - board state before performing minimax
+    new-board - board state after  performing minimax
+|#
 (defun find-location ( old-board new-board )
   "Determine location of piece placed"
   (let
@@ -35,6 +45,15 @@ Modifications:
   )
 )
 
+#|
+  Name: flatten-board
+  Description:
+  Converts every 'B and 'W on the board to an 'X for 
+  purposes of determining where a new piece has been 
+  placed on a board.
+  Paramaters:
+    board - game board
+|#
 (defun flatten-board ( board )
   "flatten every piece to the same symbol"
   ( map 'list
@@ -48,7 +67,14 @@ Modifications:
   board )
 )
 
-
+#|
+  Name: loc-to-row-col
+  Description:
+  Converts a location value (0-63) to its 
+  corresponding row-col pair.
+  Parameters:
+    location: location value on the board.
+|#
 ( defun loc-to-row-col ( location )
   "Convert location in array to row/col list"
   ( let 
@@ -81,6 +107,13 @@ Modifications:
   )
 )
 
+#|
+  Name: count-discs
+  Description:
+  Count up the number of Black and White discs on the board.
+  Paramaters:
+    board - game board
+|#
 ( defun count-discs ( board ) 
   "Return Player Scores AKA how many pieces they currently have"
   ( let 
@@ -96,6 +129,15 @@ Modifications:
   )
 )
 
+#|
+  Name: counter
+  Description:
+  Counter function for recursively tallying the number 
+  of pieces for a given piece color. 
+  Paramaters:
+    atom - a given location in a list
+    lst  - a given list (in this case its the board)
+|#
 ( defun counter ( atom lst )
   "Count all of a given atom"
   ( cond
@@ -118,6 +160,13 @@ Modifications:
   )
 )
 
+#|
+  Name: declare-winner
+  Description:
+  Declare who has won the game of othello
+  Paramaters:
+    scores - ( Black_Score White_Score )
+|#
 ( defun declare-winner ( scores ) 
   "Announce Winner of the game based on count list"
   ( let 
@@ -156,6 +205,18 @@ Modifications:
   )
 )
 
+#|
+  Name: prompt-ai
+  Description:
+  "Prompt" the AI to perform their move. In reality, 
+  the AI is not technically prompted, but this function 
+  is named as such since it follows the convention of 
+  preparing for a move, and handling if the player is 
+  unable to perform a move successfully at the time.
+  Paramaters:
+    color - the color the AI is playing as
+    board - game board
+|#
 ( defun prompt-ai ( color board ) 
   "Prompt AI to perform their move"
   ( let 
@@ -190,9 +251,19 @@ Modifications:
 )
 
 
-
+#|
+  Name: prompt-turn
+  Description:
+  Informs the user that it is their turn, displays the game board for them, 
+  and processes keyboard input to determine their next move. This function 
+  also processes whether the human player doesn't have an available move, and 
+  also handles invalid move options given from the keyboard input.
+  Paramaters:
+    player - color of the current player 
+    board  - game board 
+|#
 ( defun prompt-turn ( player board ) 
-  "Inform user it is their turn, validate the turn they input is acceptable"
+  "Inform user it is their turn, validate if the move they input is acceptable"
   ( let 
     ( 
       input
@@ -208,12 +279,6 @@ Modifications:
     ( print-board temp-board )
 
     ( cond
-      ;PROBABLY DON't need this here anymore, but it's late
-  		;so I'll figure this out tomorrow. Just redo human v human.
-      ;end game?
-      ( ( end-game? player board )
-        ( declare-winner ( count-discs board ) )         
-      )
 
       ;pass player turn?
       ( ( pass-turn? player  board ) 
@@ -269,8 +334,18 @@ Modifications:
   )
 )
 
+#|
+  Name: place-disc
+  Description:
+  Place a disc in a given location.
+  Paramaters:
+    player - player color placing the disc
+    board  - game board 
+    row    - row in which disc is being placed 
+    col    - column in which disc is being placed
+|#
 ( defun place-disc ( player board row column ) 
-  "Place a Disc in the specified location, flip any pieces that are now flanked"
+  "Place a Disc in the specified location"
   ( let 
     ( 
         location
@@ -304,6 +379,15 @@ Modifications:
   )
 )
 
+#|
+  Name: end-turn
+  Description:
+  Swap to the other player's turn. This only works for 
+  human vs human mode.
+  Paramaters:
+    player - current player 
+    board  - game board
+|#
 ( defun end-turn ( player board )
   "Switch turns to the other player (human v human only)"
   ( cond
@@ -320,6 +404,17 @@ Modifications:
 )
 
 
+#|
+  Name: count-legal-moves
+  Description:
+  Old function for counting valid legal moves a player can make. Basically all 
+  instances in which this function was used have been replaced by Marcus's 
+  get-valid-moves function since it's a lot less complicated and does the same 
+  thing. However, I have left this in just in case.
+  Paramaters:
+    player - current player 
+    board  - game board
+|#
 ( defun count-legal-moves ( player board )
   "Check if a player has any legal moves"
   ( let 
@@ -359,6 +454,16 @@ Modifications:
   )
 )
 
+#|
+  Name: legal-move?
+  Description:
+  Determine if an attempted move is legal
+  Paramaters:
+    player - current player 
+    board  - game board
+    row    - row    containing attempted move
+    col    - column containing attempted move
+|#
 ( defun legal-move? ( player board row column ) 
   "Check if a supplied place-disc move is legal"
   ( let 
@@ -425,21 +530,38 @@ Modifications:
   )
 )
 
+#|
+  Name: pass-turn?
+  Description:
+  Determine whether a player is required to forfeit their current turn.
+  Paramaters:
+    player - current player 
+    board  - game board
+|#
 ( defun pass-turn? ( player board ) 
   "Check if a player has to pass their turn"
   ( cond
-    ;Are there any legal moves? if not.... pass turn
-    ( ( < ( count-legal-moves player board ) 1  )
-      T
-    )
-    ;otherwise, don't pass turn.
-    ( T
+    ;If there are legal moves, don't pass turn
+    ( ( get-valid-moves board player )
       NIL
+    )
+    ;otherwise, Pass Turn
+    ( T
+      T
     )
   )
 )
 
-
+#|
+  Name: check-flip-dirs
+  Description:
+  Determine if you've hit an edge when looking for a bracket piece for 
+  flipping discs.
+  Paramaters:
+    row        - row    containing attempted move
+    column     - column containing attempted move
+    directions - the direction in which you're checking
+|#
 ( defun check-flip-dirs ( row column directions )  
   "Verify possible flips are valid in the given directions"
   ( let 
@@ -477,7 +599,16 @@ Modifications:
   )
 )
 
-
+#|
+  Name: keep-moving?
+  Description:
+  Determine if you've hit an edge when looking for a bracket piece for 
+  flipping discs. This specifically determines if you should keep 
+  searching or give up.
+  Paramaters:
+    curr        - current position being checked on board
+    direction   - current direction being checked on board
+|#
 ( defun keep-moving? ( curr direction )
   "Checks whether function should still search for bracket piece"
   ( let 
@@ -552,8 +683,23 @@ Modifications:
   )
 )
 
+#|
+  Name: flip-at
+  Description:
+  Flip discs from the specified row column until you hit the bracket piece. 
+  This function is very long because it first seeks out the bracket piece(s) 
+  to validate their existence, then backtracks to flip all pieces between the 
+  placed disc and the bracket piece. There is also a lot of legacy redundant 
+  checks factored in from early human vs human implementation to ensure illegal 
+  flips do not occur.
+  Paramaters:
+    player - player color
+    board  - game board 
+    row    - row in which piece had been placed to perform flip 
+    column - column in which piece had been placed to perform flip
+|#
 ( defun flip-at ( player board row column )
-  "Check for flips at a given location"
+  "Flip at current location"
   ( let 
     ( 
       ( bracket '(row column) )
@@ -695,48 +841,43 @@ Modifications:
   )
 )
 
-( defun end-game? ( player board )
+#|
+  Name: end-game?
+  Description:
+  Based on the board state, determine if the game should end now. Game 
+  termination is determined when both players consecutively pass turn.
+  Paramaters:
+    board  - game board 
+|#
+( defun end-game? ( board )
   "Check if both players just passed turns, thus ending the game"
-  ( let 
-    ( 
-      opponent
-      player-moves
-      opponent-moves
+
+  ( cond
+    ;if both players skip, then game is over
+    (
+      ( and 
+        ( pass-turn? 'B board ) 
+        ( pass-turn? 'W board ) 
+      )
+        T
     )
 
-    ( cond
-      ;Opponent is white
-      ( ( string= player 'B ) 
-        ( setf opponent 'W )
-      )
-
-      ;Opponent is Black
-      ( ( string= player 'W ) 
-        ( setf opponent 'B )
-      )
-    )
-
-    ( setf player-moves   ( count-legal-moves player board   ) )
-    ( setf opponent-moves ( count-legal-moves opponent board ) )
-
-    ( cond
-      ;if both players skip, then game is over
-      (
-        ( and 
-          ( < player-moves   1 )
-          ( < opponent-moves 1 )
-        )
-          T
-      )
-
-      ;otherwise, game isn't over
-      ( t
-          nil
-      )
+    ;otherwise, game isn't over
+    ( t
+        nil
     )
   )
 )
 
+#|
+  Name: prompt-player-colour
+  Description:
+  Ask the player which color they want to play as. Black always moves first. 
+  Only really important for human vs ai, since human vs human assumes two 
+  human players, and ai vs ai has zero human interaction & Black AI moves first.
+  Paramaters:
+    nil
+|#
 ( defun prompt-player-colour ()
   "Ask the person what colour they want to be"
   ( let 
@@ -747,7 +888,7 @@ Modifications:
 
     ( format t "Would you like to play as " )
     ( format t "~c[37;40mBLACK~c[0m or " #\ESC #\ESC  )
-    ( format t "~c[30;47mWHITE~c[0m ?~%"   #\ESC #\ESC )
+    ( format t "~c[30;47mWHITE~c[0m ?~%" #\ESC #\ESC  )
     ( format t "(~c[37;40mBLACK~c[0m moves first) > " #\ESC #\ESC  )
 
     ;get user input...
@@ -778,6 +919,16 @@ Modifications:
   )
 )
 
+#|
+  Name: prompt-play-again?
+  Description:
+  Ask the player if they wish for revenge. Choosing yes will restart whichever 
+  game type previous game was. Choosing no will return user to main menu, where 
+  they can chose a different gametype.
+  Paramaters:
+    player   - player color
+    gametype - gametype of previous game that just ended.
+|#
 ( defun prompt-play-again? ( player gametype )
   "Ask the person if they would like to start over"
   ( let 
@@ -836,6 +987,14 @@ Modifications:
   )
 )
 
+#|
+  Name: prompt-gametype
+  Description:
+  Main menu prompting user for which gametype they would wish to play. The 
+  user is also given the option to quit out of the program.
+  Paramaters:
+    player - player color
+|#
 ( defun prompt-gametype ( &optional ( player nil ) ) 
   "Ask the person what game type they wish to play"
   ( let 

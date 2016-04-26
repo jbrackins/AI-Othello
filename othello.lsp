@@ -97,9 +97,7 @@ Modifications:
      row-col
     )
     ;Alternate between black and white AI until done
-    ( loop while ( not 
-                  ( and (end-game? color board) 
-                        (end-game? ( other-color color ) board) ) ) do 
+    ( loop while ( not ( end-game? board ) ) do 
       ( print-board board ) 
       ( setf board ( prompt-ai color board ) )
       ( setf color ( other-color color ) )
@@ -133,10 +131,7 @@ Modifications:
 
   ;Prompting for color doesn't really matter, just hand
   ;the computer to whoever wants to go first
-  ( loop while ( not 
-                  ( and (end-game? 'W board) 
-                        (end-game? 'B board) ) ) do 
-
+  ( loop while ( not ( end-game? board ) ) do 
     ( setf board ( prompt-turn 'B board ) )
     ( setf board ( prompt-turn 'W board ) )    
   )
@@ -187,9 +182,7 @@ Modifications:
       )
     )
 
-    ( loop while ( not 
-                    ( and (end-game? player board) 
-                          (end-game? ai     board) ) ) do 
+    ( loop while ( not ( end-game? board ) ) do 
       ( cond
 
           ;Player = Black; AI = WHITE
