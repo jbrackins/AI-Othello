@@ -1,8 +1,6 @@
 # AI-Othello
  Lisp based Othello program designed to investigate AI game playing techniques. 
 
-Lisp based Othello program designed to investigate AI game playing techniques. 
-
 # Othello Game Description 
 Othello, also known as Reversi, is a game played on an 8x8 grid with 64 discs 
 that are black on one side and white on the other. Based on the following 
@@ -100,14 +98,14 @@ in which our program will compete against the programs written by other
 students in the course. in order to facilitate the programs playing against one 
 another, the following torunament functions have been supplied:
 
-( make-move position player ply ) 
+* ( make-move position player ply ) 
 
 This function takes the current board position, the current player who has the 
 next move, and the depth of search (or ply, to look ahead in the game tree). 
 It returns a ( row col ) list that specifies the move selected by the minimax 
 function, or NIL if no legal move exists.
 
-( othello-init )
+* ( othello-init )
 
 Another tournament function is othello-init, which takes no arguments. This 
 function is called once, prior to the start of tournament play. Initialization 
