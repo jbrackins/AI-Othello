@@ -84,7 +84,7 @@ Functions called:
     color - player to calculate a value for.
 |#
 (defun static (position color)
-  (weighted-parity position score-weights color)
+    (weighted-parity position score-weights color)
 )
 
 #|
