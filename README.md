@@ -1,4 +1,4 @@
-# AI-Othello
+# othello-ai
  Lisp based Othello program designed to investigate AI game playing techniques. 
 
 # Othello Game Description 
