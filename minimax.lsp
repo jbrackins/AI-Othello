@@ -1,4 +1,3 @@
-
 #|
                   ***** MINIMAX.LSP *****
 
@@ -31,6 +30,18 @@ Functions called:
           Note: these functions may need additional arguments.
 |#
 
+
+#|
+  Name: deepenough
+  Description: 
+  The function to deepenought is used by Dr. Weiss minimax function
+  to check if the program should stop going deeper. We don't have
+  any special requirements of depth for our algorithim so it just stops
+  at zero.
+
+  Paramater:
+    depth - current depth
+|#
 (defun deepenough (depth)
   (< depth 1)
 )
@@ -45,16 +56,54 @@ Functions called:
   )
 )
 
+#|
+  Name: move-generator
+  Description: 
+  This function is used by Dr. Weiss's minimax function to generate possible
+  moves. It workd by generating positions of moves using get-valid-moves
+  and then turns them into board states using make-move-int.
+
+  Paramater:
+    position - current board state
+    color - color of current player (black or white)
+|#
 (defun move-generator (position color)
   (loop for x in (get-valid-moves position color)
     collect (make-move-int position x color) 
   )
 )
 
+#|
+  Name: static
+  Description:
+  static evaluation function for Dr. Weiss's minimax funtion.
+  it calls our weighted-parity function to get its value
+
+  Paramaters
+    position - current board state
+    color - player to calculate a value for.
+|#
 (defun static (position color)
   (weighted-parity position score-weights color)
 )
 
+#|
+  Name: minimax
+  Description:
+  The mini-max function provided by Dr. Weiss modified to enable alpha 
+  beta pruning. Alpha and beta are optional paramaters that should only
+  be provided internally. If beta is ever found to be less then alpha
+  the algorithim stops minimax on that level "pruning off" remaining states
+  as a method to save computational time.
+
+  Paramaters
+    position - current board state
+    depth - how many more levels to search down
+    color - player to calculate a value for.
+    max? : t - true for maximizing player, false for minimizing player
+    alpha : -1000000 - the ever increasing alpha value
+    beta  : 1000000 - the ever decreasing beta value.
+|#
 (defun minimax (position depth color &optional (max? t) (alpha -100000) (beta 100000) )
 
   ; if we have searched deep enough, or there are no successors,
