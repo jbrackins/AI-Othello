@@ -3,19 +3,19 @@
 
 Lisp based Othello program designed to investigate AI game playing techniques. 
 
-# Othello Game Description **
+# Othello Game Description 
 Othello, also known as Reversi, is a game played on an 8x8 grid with 64 discs 
 that are black on one side and white on the other. Based on the following 
 start position:
 
-  - - - - - - - -
-  - - - - - - - - 
-  - - - - - - - - 
-  - - - W B - - - 
-  - - - B W - - - 
-  - - - - - - - - 
-  - - - - - - - - 
-  - - - - - - - - 
+    - - - - - - - -
+    - - - - - - - - 
+    - - - - - - - - 
+    - - - W B - - - 
+    - - - B W - - - 
+    - - - - - - - - 
+    - - - - - - - - 
+    - - - - - - - - 
 
 the two players (BLACK and WHITE) alternate turns placing discs on the board. 
 In order for a valid turn to be made, discs must be placed to surround enemy 
@@ -28,14 +28,14 @@ In the following demonstration, The black player moves first, places a disc in
 row 6, column 5. This causes the white disc in row 5, column 5 to flip to the 
 black side.
 
-  - - - - - - - -     - - - - - - - -     - - - - - - - - 
-  - - - - - - - -     - - - - - - - -     - - - - - - - - 
-  - - - - - - - -     - - - - - - - -     - - - - - - - - 
-  - - - W B - - -  => - - - W B - - -  => - - - W B - - - 
-  - - - B W - - -  => - - - B W - - -  => - - - B B - - -  
-  - - - - - - - -     - - - - B - - -     - - - - B - - - 
-  - - - - - - - -     - - - - - - - -     - - - - - - - - 
-  - - - - - - - -     - - - - - - - -     - - - - - - - - 
+    - - - - - - - -     - - - - - - - -     - - - - - - - - 
+    - - - - - - - -     - - - - - - - -     - - - - - - - - 
+    - - - - - - - -     - - - - - - - -     - - - - - - - - 
+    - - - W B - - -  => - - - W B - - -  => - - - W B - - - 
+    - - - B W - - -  => - - - B W - - -  => - - - B B - - -  
+    - - - - - - - -     - - - - B - - -     - - - - B - - - 
+    - - - - - - - -     - - - - - - - -     - - - - - - - - 
+    - - - - - - - -     - - - - - - - -     - - - - - - - - 
 
 Whenever a player cannot place a disc that will bracket enemy pieces, that 
 player must forfeit their current turn.
@@ -61,13 +61,15 @@ following:
   1. Look at all available moves
   2. Assign a rating to each board position that results form each move
   3. Pick the move with the [minimum/maximum] point rating.
+
 This algorithm alternates step 3 for minimum and maximum for the player 
 [maximum] and their opponent [minimum]. One of the benefits of this method is 
 that the point ratings work for both the player moves and the opponent moves; 
 alternating looking at minimum during opponent's turn and maximum during player 
-turn is sufficient. ( Source: Land of Lisp, Conrad Barski ). Minimax is 
-performed by creating a graph of available moves and performing depth-first 
-search.
+turn is sufficient. Minimax is performed by creating a graph of available moves 
+and performing depth-first search.
+
+( Minimax Description Source: Land of Lisp, Conrad Barski )
 
 # Alpha-beta Pruning
 Alpha beta pruning is a search algorithm that decreases the number of nodes 
@@ -78,15 +80,18 @@ for the current player. As a result, the returned solution from minimax without
 alpha-beta pruning will be identical to the solution from minimax with 
 alpha-beta pruning. The major difference is the amount of time saved by 
 reducing the number of expanded nodes in the search algorithm.
-( Source: https://en.wikipedia.org/wiki/Alpha-beta_pruning )
+
+( Alpha-beta Pruning Source: https://en.wikipedia.org/wiki/Alpha-beta_pruning )
 
 # Program Usage
 * Command Line Usage:
-  clisp othello.lsp [player] (Black or White)
+    
+    clisp othello.lsp <player> (Black or White)
 
 * CLISP Usage:
-  (load 'othello)
-  ( othello [player] )
+
+    (load 'othello)
+    ( othello [player] )
 
 # Othello Tournament
 For the Spring 2016 CSC 447/547 course, we are holding an Othello tournament 
@@ -95,12 +100,14 @@ students in the course. in order to facilitate the programs playing against one
 another, the following torunament functions have been supplied:
 
 ( make-move position player ply ) 
+
 This function takes the current board position, the current player who has the 
 next move, and the depth of search (or ply, to look ahead in the game tree). 
 It returns a ( row col ) list that specifies the move selected by the minimax 
 function, or NIL if no legal move exists.
 
 ( othello-init )
+
 Another tournament function is othello-init, which takes no arguments. This 
 function is called once, prior to the start of tournament play. Initialization 
 code may be placed in this routine if necessary, but our implementation does 
