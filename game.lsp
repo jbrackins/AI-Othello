@@ -203,7 +203,7 @@ Modifications:
                 ( print-player player )
                 ( format t "~%")
 
-                ( end-turn player board )
+                ;( end-turn player board )
             )
 
             ;otherwise, promt the user and let them play
@@ -231,7 +231,7 @@ Modifications:
                     ( (legal-move? player  temp-board row col )
                         ( place-disc player  board row col ) 
                         ( flip-at player board row col ) 
-                        ( end-turn player board )
+                        ;( end-turn player board )
                     )
 
                     ;else
@@ -268,17 +268,17 @@ Modifications:
             ;Place Black Disc
             ( ( string= player 'B ) 
                 ;place disc
-                ( setf (nth location board) "B" )
+                ( setf (nth location board) 'B )
             )
 
             ;Place White Disc
             ( ( string= player 'W ) 
                 ;place disc
-                (setf (nth location board) "W")
+                (setf (nth location board) 'W)
             )
         )
 
-        ;( end-turn player )
+        board
     )
 )
 
@@ -397,7 +397,7 @@ Modifications:
             )
             ( T
                 ;Try to perform flips, if none happen, then illegal move
-                ( setf flips ( flip-at player board row column ) )
+                ( setf flips ( cadr ( flip-at player board row column ) ) )
                 ( cond
                     ( 
                         ( < flips 1 ) 
@@ -584,13 +584,13 @@ Modifications:
         ;and what colour the opponent pieces are.
         ( cond
             ( ( string= player 'B ) 
-                (setf player-piece "B")
-                (setf opponent-piece "W")
+                (setf player-piece 'B)
+                (setf opponent-piece 'W)
             )
 
             ( ( string= player 'W ) 
-                (setf player-piece "W")
-                (setf opponent-piece "B")
+                (setf player-piece 'W)
+                (setf opponent-piece 'B)
             )
         )
 
@@ -664,15 +664,15 @@ Modifications:
                                                     ( cond
 
                                                         ;Flip BLACK to White
-                                                        ( ( string=  (nth q  board )  "B" ) 
-                                                            (setf  (nth q  board ) "W")
+                                                        ( ( string=  (nth q  board )  'B ) 
+                                                            (setf  (nth q  board ) 'W )
                                                             ( incf num-flipped )
 
                                                         )
 
                                                         ;Flip White to Black
-                                                        ( ( string=  (nth q  board )  "W" ) 
-                                                            (setf  (nth q  board ) "B")
+                                                        ( ( string=  (nth q  board )  'W ) 
+                                                            (setf  (nth q  board ) 'B )
                                                             ( incf num-flipped )
 
                                                         )
@@ -708,10 +708,8 @@ Modifications:
         )
         ;return how many tiles were flipped, as this will be used in min-max
         ;( format t "~A tiles flipped ~%" num-flipped)
-        num-flipped
+        (list board num-flipped)
     )
-
-
 )
 
 ( defun end-game? ( player board )

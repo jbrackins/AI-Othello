@@ -28,11 +28,11 @@
   (cond
     ((= move NORTH) (> pos 7))
     ((= move NORTHEAST) (and (> pos 7) (not (= (mod pos 8) 7))))
-    ((= move EAST) (not (= (mod pos 8) 1)))
+    ((= move EAST) (not (= (mod pos 8) 7)))
     ((= move SOUTHEAST) (and (< pos 56) (not (= (mod pos 8) 7))))
     ((= move SOUTH) (< pos 56))
     ((= move SOUTHWEST) (and (< pos 56) (not (= (mod pos 8) 0))))
-    ((= move WEST) (not (= (mod pos 8) 0)))
+    ((= move WEST) ( and (not (= (mod pos 8) 0)) ( > pos 1 ) )  )
     ((= move NORTHWEST) (and (> pos 7) (not (= (mod pos 8) 0))))
     (t nil)
   )
@@ -43,8 +43,10 @@
   (let ( (newPos (+ pos move)) )
     (cond
       ( (not (on-board pos move)) nil)
-      ( (equal color (nth newPos board)) good)
-      ( (equal '- (nth newPos board)) nil)
+      ;Modified these to string= because they seem to work 
+      ;more consistently.... JB
+      ( (string= color (nth newPos board)) good)
+      ( (string= '- (nth newPos board)) nil)
       ( t (valid-move-direction board newPos move color t) )
     )
   )    

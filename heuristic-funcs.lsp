@@ -11,8 +11,8 @@
 
 (defun other-color (color)
   (cond
-    ( (equal color 'B) 'W)
-    ( (equal color 'W) 'B)
+    ( (string= color 'B) 'W)
+    ( (string= color 'W) 'B)
     ( T '- )
   )
 )

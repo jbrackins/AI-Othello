@@ -82,18 +82,44 @@ Modifications:
         )
 
         ;RETURN THE ROW-COLUMN PAIR FOR THE MOVE MADE BY AI
-        ( loc-to-row-col  ( find-location old move )  )
+       ( loc-to-row-col  ( find-location old move )  )
+       ;move
     )
 )
 
 
 
 ( defun c-v-c ( board color )
-  (cond 
-    ( (setf board (make-move board color 4))
-      (print-board board )
-      (c-v-c board (other-color color)) )
-  )
+    ( let 
+        (
+           row-col
+        )
+
+        ( loop while ( not (end-game? color board) ) do 
+            ( setf temp board )
+            ( cond
+
+
+
+                ( 
+                    ( get-valid-moves board color) 
+                    ( setf row-col (make-move board color 4) )
+                    ;Perform Move If there is a valid one
+                    ( setf board ( place-disc color board (car row-col) (cadr row-col)) )
+                    (setf board ( car ( flip-at color board (car row-col) (cadr row-col) ) ) )
+                    (print-board board)
+                    ( format t "Placed Disc at: ~A~%" row-col )
+                )
+                ( T
+                    ( setf board temp )
+                    ( format t "No Moves Available...~%")
+                ) 
+            )
+
+            ( setf color ( other-color color ) )
+        )
+        ( declare-winner (count-discs board ) )
+    )
 )
 
 
@@ -154,10 +180,10 @@ Modifications:
 				                       - - - - - - - - ) ) 
 							) 
 	"Starts up a game of othello where one player is human, other is ai"
-	( let 
-        (  
-        	ai
-        )
+	;( let 
+    ;    (  
+        	;ai
+    ;    )
 
 		( cond
 
@@ -179,9 +205,22 @@ Modifications:
 			)
 		)
 
+        (setf i 0)
+        ;( loop while ( < i 64 ) do     
 
-        
-	)
+;            ( print-board board)
+;
+ ;           (setf move ( make-move board ai 4 ) )
+;
+ ;           ( place-disc ai  board (car move) (cadr move) ) 
+  ;          ( flip-at ai board (car move) (cadr move) ) 
+   ;         ( format t "ATTEMPTED MOVE: ~A~%" move )
+;
+            ;( end-turn player board )
+;
+ ;           (prompt-turn player board)
+  ;      )        
+	;)
 )
 
 ( defun prompt-player-colour ()

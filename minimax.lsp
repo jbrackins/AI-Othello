@@ -61,7 +61,7 @@ Functions called:
   (weighted-parity position score-weights color)
 )
 
-(defun minimax (position depth color &optional (alpha? t) (alpha -100000) (beta -100000) )
+(defun minimax (position depth color &optional (max? t) (alpha -100000) (beta 100000) )
 
   ; if we have searched deep enough, or there are no successors,
   ; return position evaluation and nil for the path
@@ -77,8 +77,6 @@ Functions called:
         ; initialize current best path to nil
         (best-path nil)
 
-        ;location of the best move
-        (best-location nil)
         ; initialize current best score to negative infinity
         (best-score -1000000)
 
@@ -91,7 +89,7 @@ Functions called:
       (dolist (successor successors)
 
         ; perform recursive DFS exploration of game tree
-        (setq succ-value (minimax successor (1- depth) (other-color color) (not alpha?) ))
+        (setq succ-value (minimax successor (1- depth) (other-color color) (not max?) alpha beta ))
 
         ; change sign every ply to reflect alternating selection
         ; of MAX/MIN player (maximum/minimum value)
@@ -102,29 +100,23 @@ Functions called:
         (when (> succ-score best-score)
           (setq best-score succ-score)
           (setq best-path (cons successor (cdr succ-value)))
+  )
+        (when (and max? (> best-score alpha))
+          (setf alpha best-score)
         )
-	(when (and alpha? (> best-score alpha))
-	  (setf alpha best-score)
-	  ;(print 'trimmed)
-	  (return 2)
-	)
-	(when (and (not alpha?) (> best-score beta ))
-	  (setf beta best-score)
-	  ;(print 'trimmed)
-	  (return 2)
-	)
+        (when (and (not max?) (< (- best-score) beta))
+          (setf beta  (- best-score) )
+        )
+
+  (when (> alpha beta)
+    ;(return)
+  )
 
       )
 
-            ; return (value path) list when done
 
+      ; return (value path) list when done
       (list best-score best-path)
     )
   )
 )
-
-
-
-
-
-
