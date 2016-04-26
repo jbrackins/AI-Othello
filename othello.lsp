@@ -217,6 +217,7 @@ Written Spring 2016 for CSC447/547 AI class.
      (color 'B)
      row-col
     )
+    ( print-instructions-ai-vs-ai ) 
     ;Alternate between black and white AI until done
     ( loop while ( not ( end-game? board ) ) do 
       ( print-board board ) 
@@ -252,6 +253,7 @@ Written Spring 2016 for CSC447/547 AI class.
 
   ;Prompting for color doesn't really matter, just hand
   ;the computer to whoever wants to go first
+  ( print-instructions-human-vs-human )
   ( loop while ( not ( end-game? board ) ) do 
     ( setf board ( prompt-turn 'B board ) )
     ( setf board ( prompt-turn 'W board ) )    
@@ -303,6 +305,7 @@ Written Spring 2016 for CSC447/547 AI class.
       )
     )
 
+    ( print-instructions-human-vs-ai player )
     ( loop while ( not ( end-game? board ) ) do 
       ( cond
 

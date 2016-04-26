@@ -60,6 +60,62 @@ Modifications:
 #|
   Name: print-board
   Description:
+  Explain how to watch the game (ai vs ai scenario)
+  Paramaters:
+    nil
+|#
+(  defun print-instructions-ai-vs-ai ( )
+  "Print Instruction Prompt for ai-vs-ai"
+  ( format t "~%You probably won't be able to read this, but" )
+  ( format t "~%you are now running the AI against itself!~%~%"  )
+)
+
+#|
+  Name: print-board
+  Description:
+  Explain how to play the game (human vs ai scenario)
+  Paramaters:
+    color - color of human player
+|#
+(  defun print-instructions-human-vs-ai ( color )
+  "Print Instruction Prompt for human-vs-ai"
+  ( format t "~%OK! You will be playing as " )
+  ( print-player color )
+  ( format t ".~%When asked for your move, please enter~%the row and column " )
+  ( format t  "in which you would~%like to place a " )
+  ( print-player color )
+  ( format t " disc.~%~%"  )
+  ( format t "Remember, you must outflank at least one~%" )
+  ( print-player ( other-color color ) ) 
+  ( format t " disc, or forfeit your move.~%"  )
+  ( print-player 'B )
+  ( format t " moves first.~%~%" )
+)
+
+#|
+  Name: print-board
+  Description:
+  Explain how to play the game (human vs human scenario)
+  Paramaters:
+    nil
+|#
+(  defun print-instructions-human-vs-human ( )
+  "Print Instruction Prompt for human-vs-ai"
+  ( format t "~%OK! One of you will be playing as " )
+  ( print-player 'B )
+  ( format t " And the other will be " )
+  ( print-player 'W )
+  ( format t ".~%When asked for your move, please enter~%the row and column " )
+  ( format t  "in which you would~%like to place your disc.~%~%"  )
+  ( format t "Remember, you must outflank at least one~%" )
+  ( format t "enemy disc, or forfeit your move.~%"  )
+  ( print-player 'B )
+  ( format t " moves first.~%~%" )
+)
+
+#|
+  Name: print-board
+  Description:
   Print out the game board at its current state. Additional formatting has 
   been implemented so that blank spaces are green dashes, Black Discs are 
   white text on black background, and White Discs are black text on white 
