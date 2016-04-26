@@ -241,6 +241,15 @@ Modifications:
         )
 
         ( cond
+          ;IF row and col are not numbers, illegal move
+          ( ( or 
+                ( not ( numberp row ) )
+                ( not ( numberp col ) )
+                
+            )
+              ( format t "~%Illegal Move. Please Try Again.~%" )
+              ( prompt-turn player board )
+          )
           ;Place the disc if legal move
           ( (legal-move? player  temp-board row col )
             ( setf board ( place-disc player  board row col ) )
@@ -749,15 +758,17 @@ Modifications:
       ( setf choice ( read stream NIL NIL ) )
     )
 
-    ;toupper...
-    ( setf choice (string-upcase choice ) )
+    ;get first part of the input
     ( setf choice ( subseq choice 0 1 ) )
 
     ( cond
+      ( ( numberp choice )
+        ( prompt-player-colour )
+      )
       ;Check if proper user input
       ( 
-        ( or ( string= choice 'B )
-             ( string= choice 'W)
+        ( or ( string= (string-upcase choice ) 'B )
+             ( string= (string-upcase choice ) 'W)
         )
         ;Correct, pass this as player choice
         choice
@@ -786,15 +797,16 @@ Modifications:
       ;...and set the FIRST number as ROW...
       ( setf choice ( read stream NIL NIL ) )
     )
-
-    ;toupper...
-    ( setf choice (string-upcase choice ) )
     
     ( cond
+      ;Reprompt if they put in a number on accident
+      ( ( numberp choice )
+        ( prompt-play-again? player gametype )
+      )
       ;Restart game
       ( 
-        ( or ( string= choice 'Y )
-             ( string= choice 'YES)
+        ( or ( string= (string-upcase choice ) 'Y )
+             ( string= (string-upcase choice ) 'YES)
         )
 
         ( cond
@@ -813,16 +825,72 @@ Modifications:
 
       ;End Game
       ( 
-        ( or ( string= choice 'N )
-             ( string= choice 'NO)
+        ( or ( string= (string-upcase choice ) 'N )
+             ( string= (string-upcase choice ) 'NO)
         )
-          ( format t "See Ya~%" )
+          ( othello )
       )
 
       ;else: Reprompt
       ( T
         ( prompt-play-again? player gametype )
       )
+    )
+  )
+)
+
+( defun prompt-gametype ( &optional ( player nil ) ) 
+  "Ask the person what game type they wish to play"
+  ( let 
+    (  
+      input
+      choice    
+    )
+  )
+
+  ( format t "~%GAME MODES: ~%" )
+  ( format t "[1] HUMAN VS HUMAN~%" )
+  ( format t "[2] AI    VS AI   ~%" )
+  ( format t "[3] HUMAN VS AI   ~%" )
+  ( format t "[4] QUIT PROGRAM  ~%~%" )
+
+  ( format t "Please select a gametype (1, 2, 3, or 4): ")
+  ;get user input...
+  ( setf input ( read-line ) )
+
+  ( with-input-from-string ( stream input )
+    ;...and set the FIRST number as ROW...
+    ( setf choice ( read stream NIL NIL ) )
+  )
+
+  ( cond
+    ;CHECK GAMETYPE
+    ;FIRST handle if they aren't numbers...
+    ( ( not ( numberp choice ) )
+      ( format t "~%Please try again... ~%")
+      ( prompt-gametype player )
+    )
+
+    ( ( = choice 1 )
+      ( format t "~%Preparing: HUMAN VS HUMAN~%")
+      ( othello-human-vs-human player )
+    )
+    ( ( = choice 2 )
+      ( format t "~%Preparing: AI VS AI~%")
+      ( othello-ai-vs-ai )
+    )
+    ( ( = choice 3 )
+      ( format t "~%Preparing: HUMAN VS AI~%")
+      ( othello-human-vs-ai player )
+    )
+    ( ( = choice 4 )
+      ( format t "~%See ya.... ~%")
+      ( values )
+    )
+    ;else: Reprompt
+    ( T
+      ( format t "~%Please try again... ~%")
+      ( prompt-gametype player )
     )
   )
 )
