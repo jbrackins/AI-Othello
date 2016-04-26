@@ -17,7 +17,7 @@ Where:
 "B" is a black piece
 "W" is a white piece 
 
-This file also contains various other print functions as well.
+This file also contains various other important print functions as well.
  
 Author:  J. Anthony Brackins, Marcus Haberling
 
@@ -28,6 +28,14 @@ Modifications:
 
 |#
 
+
+#|
+  Name: print-title
+  Description:
+  Print out the title card for our program!
+  Paramaters:
+    nil
+|#
 ( defun print-title () 
   "Print OTHELLO Game Title"
 
@@ -49,6 +57,16 @@ Modifications:
   ( values )
 )
 
+#|
+  Name: print-board
+  Description:
+  Print out the game board at its current state. Additional formatting has 
+  been implemented so that blank spaces are green dashes, Black Discs are 
+  white text on black background, and White Discs are black text on white 
+  background.
+  Paramaters:
+    position - current board state
+|#
 ( defun print-board ( position ) 
   "Print out the current state of the board"
   ( let 
@@ -71,7 +89,8 @@ Modifications:
             ( print-square square )
         )
         ;Go to the next line (Optional: print out the value at end of line)
-        ( format t " ~A~%" ( - end 1 ) ) 
+        ( format t " ~%" ) 
+        ;( format t " ~A~%" ( - end 1 ) ) 
         ;increment the iterators
         ( setf start end )
         ( setf end ( + end 8 ) )
@@ -82,6 +101,15 @@ Modifications:
   )
 )
 
+#|
+  Name: print-player
+  Description:
+  Print out player name, either "BLACK" or "WHITE", with special ANSI escape 
+  formatting. ANSI escape code formatting reference:
+  https://en.wikipedia.org/wiki/ANSI_escape_code
+  Paramaters:
+    player - player color
+|#
 ( defun print-player ( player )
   "Print Player name with formatted colour"
   ( cond
@@ -98,6 +126,17 @@ Modifications:
   )
 )
 
+#|
+  Name: print-square
+  Description:
+  Print out board square, with special ANSI escape 
+  formatting. Blank spaces are green dashes, Black Discs are 
+  white text on black background, and White Discs are black text on white 
+  background. ANSI escape code formatting reference:
+  https://en.wikipedia.org/wiki/ANSI_escape_code
+  Paramaters:
+    square - particular square on the board
+|#
 ( defun print-square ( square )
   "Print a single square of the board with proper colour formatting"
   ( cond
@@ -120,6 +159,13 @@ Modifications:
   )
 )
 
+#|
+  Name: test-print-board
+  Description:
+  Quick validation function to verify that print-board worked.
+  Paramaters:
+    nil
+|#
 ( defun test-print-board () 
   "Verify print-board is working"
   ( let 
