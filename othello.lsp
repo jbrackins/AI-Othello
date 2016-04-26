@@ -43,12 +43,21 @@ Modifications:
   ( let 
     (
       ( old position )
-      (move  (car (car (cdr (minimax position ply player t)))) )
+      (move  (caadr ( minimax position ply player t ) ) )
     )
 
-    ;RETURN THE ROW-COLUMN PAIR FOR THE MOVE MADE BY AI
-    ( loc-to-row-col  ( find-location old move )  )
-   ;move
+    ( cond
+
+      ;Make-move should return NIL if there are no valid moves
+      ( ( not ( get-valid-moves position player ) )
+        nil
+      )
+
+      ;If there was a valid move, return the (row col) list
+      ( T
+        ( loc-to-row-col  ( find-location old move )  )
+      )
+    ) 
   )
 )
 
