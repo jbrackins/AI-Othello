@@ -130,6 +130,57 @@ reducing the number of expanded nodes in the search algorithm.</p>
 <p>( Alpha-beta Pruning Source: <a href="https://en.wikipedia.org/wiki/Alpha-beta_pruning">https://en.wikipedia.org/wiki/Alpha-beta_pruning</a> )</p>
 
 <h1>
+<a id="board-weights-for-heuristics" class="anchor" href="#board-weights-for-heuristics" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Board Weights for Heuristics</h1>
+
+<p>The following board is the value map used to determine how the AI 
+prioritize movements:</p>
+
+<pre><code>32 01 16 08 08 16 01 32
+01 01 02 02 02 02 01 01
+16 02 04 04 04 04 02 16
+08 02 04 02 02 04 02 08
+08 02 04 02 02 04 02 08
+16 02 04 04 04 04 02 16
+01 01 02 02 02 02 01 01
+32 01 16 08 08 16 01 32
+</code></pre>
+
+<p>The value map on the board causes the weighted-count 
+heuristic to prioritize specific board positions. All of the weights were 
+assigned as powers of 2.The folling is a list of the weighted regions and 
+the reasoning for those weights.</p>
+
+<ul>
+<li>Corners 32: 
+Corners had originally been 16, however in testing the
+ai gave them up too easily. 32 was a better value, 
+as this causes the ai to almost always prioritize corners when available.</li>
+<li>Areas around corners 01: 
+Since the areas around corners will give your opponents an
+opprotunity to take the corner they are the lowest score
+on the list.</li>
+<li>Outer Sides 16: 
+Outer sides seemed more important than the inner
+sides when playing because they are harder to flank. 
+When they were previously equivilent the ai didn't properly 
+defend them which allowed the other player to build up a strong 
+side of the board more easily. </li>
+<li>Inner Sides 8: 
+The inner sides are more important than the center board but the
+easiest to flank so we set those up as the weakest of the sides
+this makes the program build up a side from corner to the next.</li>
+<li>2nd Row/Col in 2: These spaces were set to 2  (the default weight) because
+they open up an opportunity to take a side.</li>
+<li>3rd Row/Col in 4: These are usually safe moves so they are prioritized
+over the standard value of 2. They also open the opponent to less
+safe move.</li>
+<li>Starting Positions: These are given the standard value of 2 as to not
+over influence the game since they are both inconsequential and hard
+to control.<br>
+</li>
+</ul>
+
+<h1>
 <a id="program-usage" class="anchor" href="#program-usage" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Program Usage</h1>
 
 <ul>
