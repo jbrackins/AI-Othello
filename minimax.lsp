@@ -100,7 +100,8 @@ Functions called:
         (when (> succ-score best-score)
           (setq best-score succ-score)
           (setq best-path (cons successor (cdr succ-value)))
-	)
+        )
+
         (when (and max? (> best-score alpha))
           (setf alpha best-score)
         )
@@ -108,9 +109,9 @@ Functions called:
           (setf beta  (- best-score) )
         )
 
-	(when (> alpha beta)
-	  ;(return)
-	)
+        (when (> alpha beta)
+          (return)
+        )
 
       )
 

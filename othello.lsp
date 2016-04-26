@@ -28,14 +28,26 @@ Modifications:
 
 ( defparameter *board-start* 
 	                        '( - - - - - - - -
-		   					   - - - - - - - - 
-		   					   - - - - - - - - 
-		                       - - - W B - - - 
-		                       - - - B W - - - 
-		                       - - - - - - - - 
-		                       - - - - - - - - 
-		                       - - - - - - - - 
-   		                     ) 
+                               - - - - - - - - 
+                               - - - - - - - - 
+                               - - - W B - - - 
+                               - - - B W - - - 
+                               - - - - - - - - 
+                               - - - - - - - - 
+                               - - - - - - - - 
+                             ) 
+)
+
+( defparameter *board-two* 
+	                        '( - - - - - - - -
+                               - - - - - - - - 
+                               - - - - - - - - 
+                               - - - W B - - - 
+                               - - - B B - - - 
+                               - - - - B - - - 
+                               - - - - - - - - 
+                               - - - - - - - - 
+                             ) 
 )
 
 ;A general fallacy to othello is that ending up with the most discs is the 
@@ -45,14 +57,14 @@ Modifications:
 ;victory.
 ( defparameter *board-too-much-too-soon* 
 	                        '( - W W W W W W -
-		   					   W W W W W W W W 
-		   					   W W W W W W W W 
-		                       W W W B W W W W  
-		                       W W W W W W W W 
-		                       W W W W W W W W  
-		                       W W W W W W W W 
-		                       - W W W W W W -
-   		                     ) 
+                               W W W W W W W W 
+                               W W W W W W W W 
+                               W W W B W W W W  
+                               W W W W W W W W 
+                               W W W W W W W W  
+                               W W W W W W W W 
+                               - W W W W W W -
+                             ) 
 )
 
 
@@ -62,25 +74,45 @@ Modifications:
 
 ( defun make-move ( position player ply ) 
   "function to allow Othello programs interact in computer tournament"
-  (setf _ALPHA_ -1000000)
-  (setf _BETA_   1000000)
-  (car (car (cdr (minimax position ply player t))))
+    ( let 
+        (
+            ( old position )
+            (move  (car (car (cdr (minimax position ply player t)))) )
+        )
 
+        ;RETURN THE ROW-COLUMN PAIR FOR THE MOVE MADE BY AI
+       ( loc-to-row-col  ( find-location old move )  )
+       ;move
+    )
 )
 
-( defun c-v-c ( board color )
-  (cond 
-    ( (setf board (make-move board color 4))
-      (print-board board )
-      (c-v-c board (other-color color)) )
-  )
+;renamed from c-v-c
+( defun othello-ai-vs-ai ( &optional 
+                            ( board '( - - - - - - - -
+                                       - - - - - - - - 
+                                       - - - - - - - - 
+                                       - - - W B - - - 
+                                       - - - B W - - - 
+                                       - - - - - - - - 
+                                       - - - - - - - - 
+                                       - - - - - - - - ) ) 
+                        ) 
+    ( let 
+        (
+           (color 'B)
+           row-col
+        )
+        ( loop while ( not (end-game? color board) ) do 
+            ( setf board ( prompt-ai color board ) )
+            ( setf color ( other-color color ) )
+        )
+        ( declare-winner (count-discs board ) )
+    )
 )
 
 
 ( defun othello ( &optional ( player nil ) ) 
 	"Starts up a game of othello."
-
-
 	( cond
 
 		;Prompt for colour if none given
@@ -89,8 +121,8 @@ Modifications:
 			( setf player ( subseq player 0 1 ) )
 		)
 	)
-	( othello-two-players player )
-	;( othello-human-vs-ai player )
+	;( othello-two-players player )
+	( othello-human-vs-ai player )
 )
 
 ( defun othello-two-players ( &optional ( player nil ) 
@@ -140,7 +172,6 @@ Modifications:
         )
 
 		( cond
-
 			;Prompt for colour if none given
 			( 
 				( null player )
@@ -148,8 +179,9 @@ Modifications:
 			)
 		)
 
-		( cond
 
+        ;(print player)
+		( cond
 			;Set AI colour
 			( ( string= player 'B ) 
 				( setf ai 'W )
@@ -158,7 +190,32 @@ Modifications:
 				( setf ai 'B )
 			)
 		)
-	)
+
+        ;(print ai)
+
+        ( loop while ( not 
+                        ( and (end-game? player board) 
+                              (end-game? ai     board) ) ) do 
+            ( cond
+
+                ;Player = Black; AI = WHITE
+                ( ( string= player 'B ) 
+                    ( setf board ( prompt-turn player board ) )
+                    ( print-board board )
+                    ( setf board ( prompt-ai   ai     board ) )
+                )
+                ;Player = WHITE; AI = BLACK
+                ( ( string= player 'W ) 
+                    ( setf board ( prompt-ai   ai     board ) )
+                    ( setf board ( prompt-turn player board ) )
+                    ( print-board board )
+                )
+            )
+        )
+        ( declare-winner (count-discs board ) )
+        ( prompt-play-again? player "OTHELLO-HUMAN-VS-AI" )
+
+    )
 )
 
 ( defun prompt-player-colour ()
@@ -245,6 +302,14 @@ Modifications:
 						( string= gametype "OTHELLO-TWO-PLAYERS" )
 						( othello-two-players )
 					)
+                    ( 
+                        ( string= gametype "OTHELLO-AI-VS-AI" )
+                        ( othello-ai-vs-ai )
+                    )
+                    ( 
+                        ( string= gametype "OTHELLO-HUMAN-VS-AI" )
+                        ( othello-human-vs-ai )
+                    )
 
 				)
 			)
