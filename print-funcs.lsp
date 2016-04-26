@@ -51,7 +51,7 @@ Modifications:
   ( format t " *   0000       8      8    8  80000  80000 80000  0000   *~%" )
   ( format t " *                                                        *~%" )
   ( format t " *                                                        *~%" )
-  ( format t " *              -Julian Brackins, Marcus Haberling, 2016  *~%" )
+  ( format t " *             -Julian Brackins & Marcus Haberling, 2016  *~%" )
   ( format t " *                                                        *~%" )
   ( format t " **********************************************************~%" )
   ( values )
