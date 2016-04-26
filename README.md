@@ -123,6 +123,7 @@ sites used for reference:
 * A-B Pruning wikipedia page: https://en.wikipedia.org/wiki/Alpha-beta_pruning
 * Land of Lisp Programming Book: http://dl.acm.org/citation.cfm?id=1951916
 
-Author:  J. Anthony Brackins, Marcus Haberling
+# Authors
+J. Anthony Brackins, Marcus Haberling
 
 Written Spring 2016 for CSC447/547 AI class.
