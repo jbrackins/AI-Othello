@@ -1,3 +1,23 @@
+#|
+  file: board-funcs.lsp
+
+  description:
+  This file contains the functions that check if
+  moves are valid and make moves on the board itself. the two
+  main external functions are get-valid-moves that returns
+  the moves a player can make and make-move-int that returns
+  an new board state after making a move.
+|#
+
+
+#|
+  name: direction constants
+ 
+  description:
+  The Direction Constants are a more readable way to
+  shift board position in one of the 8 directions
+  that need to be checked in relation to move making in othello
+|#
 (defconstant NORTH     -8)
 (defconstant NORTHEAST -7)
 (defconstant EAST       1)
