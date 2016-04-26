@@ -1,5 +1,5 @@
 #|
-  file: board-funcs.lsp
+                  ***** BOARD-FUNCS.LSP *****
 
   description:
   This file contains the functions that check if
@@ -7,6 +7,12 @@
   main external functions are get-valid-moves that returns
   the moves a player can make and make-move-int that returns
   an new board state after making a move.
+
+  Author:  J. Anthony Brackins, Marcus Haberling
+
+
+  Written Spring 2016 for CSC447/547 AI class.
+
 |#
 
 
@@ -46,7 +52,7 @@
   0-63 on the board
   Paramaters:
     pos-x - the row
-    pos-y - the collumn
+    pos-y - the column
 |#
 (defun make-pos (pos-x pos-y)
   (+ (- pos-x 1) (* (- pos-y 1) 8))

@@ -3,8 +3,9 @@
 
 Generalized recursive minimax routine.
 
-Author: Dr. John M. Weiss
-Class:	SDSM&amp;T CSC447/547 Artificial Intelligence
+Author: Dr. John M. Weiss. Modifications made by Julian Brackins and
+        Marcus Haberling
+Class:	SDSM&T CSC447/547 Artificial Intelligence
 Date: 	Spring 2016
 
 Usage:    (minimax position depth)
@@ -27,7 +28,9 @@ Functions called:
           (static position) -
               applies the static evaluation function to the position.
 
-          Note: these functions may need additional arguments.
+Modifications: 
+        Adapted program to fit with our project, implemented alpha beta pruning.
+
 |#
 
 

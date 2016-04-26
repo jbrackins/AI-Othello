@@ -1,10 +1,15 @@
 #|
-  file: heuristic-funcs.lsp
+                    ***** HEURISTIC-FUNCS.LSP *****
 
   Descritpion:
   This file contains all functions and constants used for the static evaluation
   function. Our program uses a variation of the coin-parity heuristic in which
   spaces are counted acording to weights.
+
+  Authors:  J. Anthony Brackins, Marcus Haberling
+
+  Written Spring 2016 for CSC447/547 AI class.
+
 |#
 
 #|
@@ -19,7 +24,7 @@
     Corners had originally been 16, however in testing the
     ai gave them up to easily. 32 was a better number, 
     causing the ai to almost always take corners.
-  Arreas around corners 01: 
+  Areas around corners 01: 
     Since the areas around corners will give your opponents an
     opprotunity to take the corner they are the lowest score
     on the list.
